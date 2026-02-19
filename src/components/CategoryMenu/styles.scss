@@ -1,0 +1,77 @@
+.padding-y-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+/* CONTAINER */
+.category-menu-wrapper { position: relative; z-index: 990; }
+
+/* THE BUTTON - Smaller on Mobile */
+.category__button {
+  display: flex;
+  align-items: center;
+  padding: 16px; /* Desktop Default */
+  border: none;
+  border-radius: 8px 8px 0 0;
+  min-width: 260px;
+  cursor: pointer;
+}
+
+@media (max-width: 991px) {
+  .category__button {
+    padding: 10px 14px; /* Smaller Mobile Size */
+    min-width: 180px;
+    font-size: 14px;
+    border-radius: 6px; /* Cleaner for mobile header */
+  }
+}
+
+/* DESKTOP DROPDOWN (No Blur) */
+@media (min-width: 992px) {
+  .category-dropdown-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 1100px;
+    min-height: 480px;
+    background: white;
+    border: 1px solid #eee;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1); /* Standard Shadow, no page blur */
+  }
+  .mega-panel-container { margin-left: 20px; }
+}
+
+/* MOBILE OFF-CANVAS (With Blur Backdrop) */
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px); /* Blur only on mobile */
+  z-index: 1040;
+}
+
+@media (max-width: 991px) {
+  .category-dropdown-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    z-index: 1050;
+    border-radius: 0 !important;
+    animation: slideIn 0.3s ease-out;
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* SHIMMER */
+.shimmer {
+  background: #f6f7f8 linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+  background-size: 800px 100%;
+  animation: shimmerAnim 1.5s infinite linear;
+}
+@keyframes shimmerAnim { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }

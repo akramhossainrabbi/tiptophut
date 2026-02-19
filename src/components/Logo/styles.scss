@@ -1,0 +1,27 @@
+/* Logo Skeleton Styling */
+.logo-skeleton {
+  background: #f4fa9d linear-gradient(to right, #f5f0ae 0%, #e9e49a 20%, #f5f0ae 40%, #f5f0ae 100%);
+  background-size: 800px 100%;
+  animation: logoShimmer 1.5s infinite linear;
+}
+
+@keyframes logoShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* Text Fallback (when logo fails) */
+.logo-text-fallback {
+  font-size: 1.5rem;
+  color: #004b91;
+  letter-spacing: -0.5px;
+}
+
+.logo-wrapper img {
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.logo-wrapper:hover img {
+  opacity: 0.9;
+}

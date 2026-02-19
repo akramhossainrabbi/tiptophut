@@ -1,0 +1,147 @@
+/* ============================= Merged Product Card Css ========================== */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch; // Essential for full-width buttons
+    overflow: hidden;
+    background: #fff;
+    width: 100%;
+
+    &:hover {
+        .product-card__thumb img {
+            transform: scale(1.2); // Your original scale
+        }
+    }
+
+    &__cart {   
+        @include xxl-screen {
+            font-size: 12px;
+            padding: 9px 12px !important;
+        }
+    }
+
+    &__badge {
+        /* Your original leaf-style badge */
+        border-radius: 16px 0 16px 0;
+        z-index: 2;
+    }
+
+    &__thumb {
+        height: 232px; // Your original height
+        width: 100%;
+        transition: 0s !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff !important;
+        position: relative;
+        overflow: hidden;
+
+        img {
+            /* Logic to cover 300x300 images while staying within bounds */
+            max-width: 160px; // Your original max-width
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            transition: .2s linear;
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        .title .link {
+            /* Merged font logic */
+            font-size: 16px;
+            font-weight: 500;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 44px;
+            margin-top: 12px;
+        }
+    }
+
+    // Ensures button stays at the bottom and is full width
+    .btn, &__cart {
+        width: 100% !important;
+        margin-top: auto;
+    }
+
+    /* Your original Style-Two */
+    &.style-two {
+        flex-direction: row;
+        .product-card {
+            &__thumb {
+                width: 260px;
+                height: 190px;
+                @include md-screen { width: 190px; }
+                @include msm-screen { width: 124px; }
+            }
+        }
+    }
+}
+
+/* Your original LG Screen Media Query */
+@include lg-screen {
+    .product-card {
+        &__thumb {
+            min-height: 160px;
+            img { max-width: 120px; }
+        }
+        &__content {
+            .product-card__price span {
+                font-size: rem(12px) !important;
+            }
+            .title .link { font-size: rem(14px); }
+            .text-xs { font-size: rem(10px) !important; }
+        }
+    }
+}
+
+/* Mobile Image Coverage Fix (0px to 575px) */
+@media (max-width: 575px) {
+    .product-card {
+        padding: 12px !important;
+
+        &__thumb {
+            height: 180px; // Gives the 300x300 image more space
+            img {
+                /* Remove fixed max-width for mobile to let image 'cover' the space */
+                max-width: 100%; 
+                max-height: 100%;
+            }
+        }
+        &__content .title .link {
+            font-size: 14px;
+            height: 38px;
+        }
+    }
+}
+
+/* Shop Page List View Mode Integration */
+.list-view-mode {
+    .product-card {
+        flex-direction: row !important;
+        align-items: stretch;
+        margin-bottom: 16px;
+
+        .product-card__thumb {
+            width: 250px;
+            height: 100%;
+            min-height: 200px;
+            flex-shrink: 0;
+        }
+        .product-card__content {
+            padding-left: 24px;
+        }
+        .btn, &__cart {
+            width: fit-content !important;
+            padding-inline: 40px !important;
+        }
+    }
+}

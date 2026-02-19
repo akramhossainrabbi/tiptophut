@@ -1,0 +1,71 @@
+/* Shimmer base display fix */
+.shimmer-base {
+    display: block; 
+}
+
+/* Target the slider container */
+.horizontal-slider {
+    width: 100%;
+    height: 6px; /* Height of the track */
+    display: flex;
+    align-items: center;
+}
+
+/* The Thumbs */
+.example-thumb {
+    height: 28px;
+    width: 32px;
+    background-color: var(--main-600, #299E60); // Your theme color
+    color: #fff;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    cursor: pointer;
+    top: -11px; /* Centers the thumb vertically over the 6px track */
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    &:focus {
+        outline: none;
+    }
+}
+
+/* The Track */
+.example-track {
+    top: 0;
+    bottom: 0;
+    background: #eee;
+    border-radius: 10px;
+}
+
+/* The active part of the track between the two thumbs */
+.example-track-1 {
+    background: var(--main-600, #299E60);
+}
+
+.animate-pulse {
+    .shimmer {
+        background: linear-gradient(
+            90deg, 
+            #f0f0f0 25%, 
+            #f8f8f8 50%, 
+            #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer-load 1.5s infinite linear;
+    }
+}
+
+@keyframes shimmer-load {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Ensure skeleton matches your sidebar padding */
+.sidebar-skeleton {
+    .shop-sidebar__box {
+        background: #fff;
+    }
+}
