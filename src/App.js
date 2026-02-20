@@ -7,7 +7,7 @@ import AccountPage from "./pages/AccountPage";
 import BlogPage from "./pages/BlogPage";
 import BlogDetailsPage from "./pages/BlogDetailsPage";
 import ContactPage from "./pages/ContactPage";
-import PhosphorIconInit from "./helper/PhosphorIconInit";
+// import PhosphorIconInit from "./helper/PhosphorIconInit";
 import WishlistPage from "./pages/WishlistPage";
 import { ToastContainer } from "react-toastify";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
@@ -25,7 +25,7 @@ function App() {
   return (
     <>
       <RouteScrollToTop />
-      <PhosphorIconInit />
+      {/* <PhosphorIconInit /> */}
       <ToastContainer />
       {/* ColorInit */}
       <ColorInit color={true} />

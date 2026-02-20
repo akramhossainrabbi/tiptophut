@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useSliders from '../../hooks/useSliders';
+import { assetsURL } from '../../helper/helper';
 import SliderSkeleton from './SliderSkeleton';
 
 const SliderComponent = memo(() => {
@@ -75,7 +76,7 @@ const SliderComponent = memo(() => {
             <div key={slider.id} className="slider-item flex-shrink-0 w-100 h-100">
               <Link to={slider.url} className="d-block w-100 h-100">
                 <img 
-                  src={slider.image} 
+                  src={assetsURL + slider.image} 
                   alt={slider.title || "Promotional banner"}
                   className="slider-img img-fluid w-100 h-100 object-fit-cover"
                   loading={index === 0 ? "eager" : "lazy"}
