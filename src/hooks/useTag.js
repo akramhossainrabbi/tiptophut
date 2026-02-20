@@ -10,8 +10,8 @@ const useTag = (slug) => {
     const [hasMore, setHasMore] = useState(true);
     
     // Tag-specific filters: category, brand, and price
-    const [priceRange, setPriceRange] = useState([0, 5000]);
-    const [absoluteRange, setAbsoluteRange] = useState([0, 5000]);
+    const [priceRange, setPriceRange] = useState([0, 0]);
+    const [absoluteRange, setAbsoluteRange] = useState([0, 0]);
     const [initialBrands, setInitialBrands] = useState([]);
     const [initialCategories, setInitialCategories] = useState({ list: [], title: "" });
     
@@ -27,8 +27,8 @@ const useTag = (slug) => {
         setProducts([]);
         setPage(1);
         setHasMore(true);
-        setPriceRange([0, 5000]);
-        setAbsoluteRange([0, 5000]);
+        setPriceRange([0, 0]);
+        setAbsoluteRange([0, 0]);
         setSelectedBrands([]);
         setSelectedCategories([]);
         setSortBy("latest");
@@ -50,8 +50,12 @@ const useTag = (slug) => {
                 page: pageNum,
                 sort: sortBy,
                 min_price: priceRange[0],
-                max_price: priceRange[1],
             });
+
+            // Only add max_price if it's been set (not 0)
+            if (priceRange[1] > 0) {
+                queryParams.append("max_price", priceRange[1]);
+            }
 
             if (selectedBrands.length > 0) {
                 queryParams.append("brands", selectedBrands.join(","));
@@ -72,7 +76,7 @@ const useTag = (slug) => {
                 setProducts(result.products);
                 
                 if (!isInitialized.current) {
-                    if (result.lowest_price !== undefined) {
+                    if (result.lowest_price !== undefined && result.height_price !== undefined) {
                         const min = result.lowest_price;
                         const max = result.height_price;
                         setPriceRange([min, max]);
@@ -97,7 +101,7 @@ const useTag = (slug) => {
         } finally {
             setLoading(false);
         }
-    }, [slug, sortBy, selectedBrands, selectedCategories, filterTick]); 
+    }, [slug, sortBy, selectedBrands, selectedCategories, priceRange, filterTick]); 
 
     useEffect(() => {
         if (slug) {

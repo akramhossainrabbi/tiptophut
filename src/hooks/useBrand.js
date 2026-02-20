@@ -10,10 +10,11 @@ const useBrand = (slug) => {
     const [hasMore, setHasMore] = useState(true);
     
     // Brand-specific filters: category and price
-    const [priceRange, setPriceRange] = useState([0, 5000]);
-    const [absoluteRange, setAbsoluteRange] = useState([0, 5000]);
+    const [priceRange, setPriceRange] = useState([0, 0]);
+    const [absoluteRange, setAbsoluteRange] = useState([0, 0]);
     const [initialBrands, setInitialBrands] = useState([]);
     const [initialCategories, setInitialCategories] = useState({ list: [], title: "" });
+    const [currentBrand, setCurrentBrand] = useState(null);
     
     const [sortBy, setSortBy] = useState("latest");
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -26,10 +27,11 @@ const useBrand = (slug) => {
         setProducts([]);
         setPage(1);
         setHasMore(true);
-        setPriceRange([0, 5000]);
-        setAbsoluteRange([0, 5000]);
+        setPriceRange([0, 0]);
+        setAbsoluteRange([0, 0]);
         setSelectedCategories([]);
         setSortBy("latest");
+        setCurrentBrand(null);
         isInitialized.current = false;
         setFilterTick(0);
     }, [slug]);
@@ -48,8 +50,12 @@ const useBrand = (slug) => {
                 page: pageNum,
                 sort: sortBy,
                 min_price: priceRange[0],
-                max_price: priceRange[1],
             });
+
+            // Only add max_price if it's been set (not 0)
+            if (priceRange[1] > 0) {
+                queryParams.append("max_price", priceRange[1]);
+            }
 
             if (selectedCategories.length > 0) {
                 queryParams.append("categories", selectedCategories.join(","));
@@ -66,7 +72,7 @@ const useBrand = (slug) => {
                 setProducts(result.products);
                 
                 if (!isInitialized.current) {
-                    if (result.lowest_price !== undefined) {
+                    if (result.lowest_price !== undefined && result.height_price !== undefined) {
                         const min = result.lowest_price;
                         const max = result.height_price;
                         setPriceRange([min, max]);
@@ -77,6 +83,12 @@ const useBrand = (slug) => {
                         list: Array.isArray(catData) ? catData : (catData?.siblings || []),
                         title: Array.isArray(catData) ? "Related Categories" : (catData?.name || "Categories")
                     });
+
+                    // Store current brand info
+                    if (result.brand) {
+                        setCurrentBrand(result.brand);
+                    }
+
                     isInitialized.current = true;
                 }
             } else {
@@ -88,7 +100,7 @@ const useBrand = (slug) => {
         } finally {
             setLoading(false);
         }
-    }, [slug, sortBy, selectedCategories, filterTick]); 
+    }, [slug, sortBy, selectedCategories, priceRange, filterTick]); 
 
     useEffect(() => {
         if (slug) {
@@ -99,7 +111,7 @@ const useBrand = (slug) => {
     return { 
         data, products, meta, loading, hasMore, setPage, 
         priceRange, setPriceRange, absoluteRange,
-        initialBrands, initialCategories,
+        initialBrands, initialCategories, currentBrand,
         sortBy, setSortBy,
         selectedCategories, setSelectedCategories,
         applyFilter: () => setFilterTick(prev => prev + 1)
