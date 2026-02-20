@@ -1,6 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
 import ShopPage from "./pages/ShopPage";
+import CategoryPage from "./pages/CategoryPage";
+import BrandPage from "./pages/BrandPage";
+import TagPage from "./pages/TagPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AccountPage from "./pages/AccountPage";
@@ -76,11 +79,11 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         
-        {/* Unified Shop Routes */}
+        {/* Shop Pages - Each with specific filters */}
         <Route path="/shop" element={<ShopPage />} />
-        <Route path="/category/:slug" element={<ShopPage type="category" />} />
-        <Route path="/brand/:slug" element={<ShopPage type="brand" />} />
-        <Route path="/tag/:slug" element={<ShopPage type="tag" />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/brand/:slug" element={<BrandPage />} />
+        <Route path="/tag/:slug" element={<TagPage />} />
 
         {/* Product Details - Changed :id to :slug to match your getMenuLink logic */}
         <Route path="/product/:slug" element={<ProductDetailsPage />} />

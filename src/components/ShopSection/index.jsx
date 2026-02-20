@@ -19,18 +19,27 @@ const SidebarSkeleton = () => (
     </div>
 );
 
-const ShopSection = ({ type = "category" }) => {
+const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) => {
     const { slug } = useParams();
-    const effectiveSlug = slug || "all";
 
+    const hookResult = hook(slug);
+    
     const { 
         data, products, meta, loading, hasMore, setPage, 
         priceRange, setPriceRange, absoluteRange, 
         initialBrands, initialCategories,
-        sortBy, setSortBy, 
-        selectedBrands, setSelectedBrands,
+        sortBy, setSortBy,
         applyFilter
-    } = useShopPage(type, effectiveSlug);
+    } = hookResult;
+    
+    // Determine which brand/category setter to use based on type
+    let selectedBrands = hookResult.selectedBrands || [];
+    let setSelectedBrands = hookResult.setSelectedBrands || (() => {});
+    
+    if (type === "brand") {
+        selectedBrands = hookResult.selectedCategories || [];
+        setSelectedBrands = hookResult.setSelectedCategories || (() => {});
+    }
     
     const [isGrid, setIsGrid] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -55,11 +64,7 @@ const ShopSection = ({ type = "category" }) => {
         if (node) observer.current.observe(node);
     }, [loading, hasMore, setPage]);
 
-    const handleBrandToggle = (brandSlug) => {
-        setSelectedBrands(prev => 
-            prev.includes(brandSlug) ? prev.filter(b => b !== brandSlug) : [...prev, brandSlug]
-        );
-    };
+
 
     const handleReset = () => {
         setPriceRange(absoluteRange);
@@ -81,8 +86,8 @@ const ShopSection = ({ type = "category" }) => {
 
                             {(!data && loading) ? <SidebarSkeleton /> : (
                                 <>
-                                    {/* Categories */}
-                                    {initialCategories.list.length > 0 && (
+                                    {/* Categories - Only show if "category" is in filters array */}
+                                    {filters.includes("category") && initialCategories.list.length > 0 && (
                                         <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                                             <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">{initialCategories.title}</h6>
                                             <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
@@ -95,48 +100,50 @@ const ShopSection = ({ type = "category" }) => {
                                         </div>
                                     )}
 
-                                    {/* Price Filter */}
-                                    <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
-                                        <div className="flex-between border-bottom border-gray-100 pb-24 mb-24">
-                                            <h6 className="text-xl">Filter by Price</h6>
-                                            <button onClick={handleReset} className="text-sm text-main-600 fw-bold border-0 bg-transparent">Reset</button>
-                                        </div>
-                                        <div className="custom--range">
-                                            <div className="slider-wrapper" style={{ height: '60px', marginTop: '20px' }}>
-                                                <ReactSlider
-                                                    className="horizontal-slider"
-                                                    thumbClassName="example-thumb"
-                                                    trackClassName="example-track"
-                                                    min={absoluteRange[0]}
-                                                    max={absoluteRange[1]}
-                                                    value={priceRange}
-                                                    onChange={(val) => setPriceRange(val)}
-                                                    renderThumb={(props, state) => {
-                                                        const { key, ...restProps } = props;
-                                                        return <div {...restProps} key={key} className="example-thumb">{state.valueNow}</div>
-                                                    }}
-                                                    pearling minDistance={10}
-                                                />
+                                    {/* Price Filter - Only show if "price" is in filters array */}
+                                    {filters.includes("price") && (
+                                        <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                                            <div className="flex-between border-bottom border-gray-100 pb-24 mb-24">
+                                                <h6 className="text-xl">Filter by Price</h6>
+                                                <button onClick={handleReset} className="text-sm text-main-600 fw-bold border-0 bg-transparent">Reset</button>
                                             </div>
-                                            <div className="flex-between flex-wrap-reverse gap-8 mt-16">
-                                                {/* --- UPDATED BUTTON LOGIC --- */}
-                                                <button 
-                                                    type="button" 
-                                                    className="btn btn-main h-40 flex-align px-24 rounded-8" 
-                                                    onClick={() => {
-                                                        applyFilter(); 
-                                                        setSidebarOpen(false);
-                                                    }}
-                                                >
-                                                    Filter
-                                                </button>
-                                                <div className="text-gray-900 fw-medium">৳{priceRange[0]} - ৳{priceRange[1]}</div>
+                                            <div className="custom--range">
+                                                <div className="slider-wrapper" style={{ height: '60px', marginTop: '20px' }}>
+                                                    <ReactSlider
+                                                        className="horizontal-slider"
+                                                        thumbClassName="example-thumb"
+                                                        trackClassName="example-track"
+                                                        min={absoluteRange[0]}
+                                                        max={absoluteRange[1]}
+                                                        value={priceRange}
+                                                        onChange={(val) => setPriceRange(val)}
+                                                        renderThumb={(props, state) => {
+                                                            const { key, ...restProps } = props;
+                                                            return <div {...restProps} key={key} className="example-thumb">{state.valueNow}</div>
+                                                        }}
+                                                        pearling minDistance={10}
+                                                    />
+                                                </div>
+                                                <div className="flex-between flex-wrap-reverse gap-8 mt-16">
+                                                    {/* --- UPDATED BUTTON LOGIC --- */}
+                                                    <button 
+                                                        type="button" 
+                                                        className="btn btn-main h-40 flex-align px-24 rounded-8" 
+                                                        onClick={() => {
+                                                            applyFilter(); 
+                                                            setSidebarOpen(false);
+                                                        }}
+                                                    >
+                                                        Filter
+                                                    </button>
+                                                    <div className="text-gray-900 fw-medium">৳{priceRange[0]} - ৳{priceRange[1]}</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
 
-                                    {/* Brands */}
-                                    {initialBrands.length > 0 && (
+                                    {/* Brands - Only show if "brand" is in filters array */}
+                                    {filters.includes("brand") && initialBrands.length > 0 && (
                                         <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                                             <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Brands</h6>
                                             <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
@@ -148,7 +155,11 @@ const ShopSection = ({ type = "category" }) => {
                                                                 type="checkbox" 
                                                                 id={`brand-${brand.id}`}
                                                                 checked={selectedBrands.includes(brand.slug)} 
-                                                                onChange={() => handleBrandToggle(brand.slug)}
+                                                                onChange={() => {
+                                                                    setSelectedBrands(prev => 
+                                                                        prev.includes(brand.slug) ? prev.filter(b => b !== brand.slug) : [...prev, brand.slug]
+                                                                    );
+                                                                }}
                                                             />
                                                             <label className="form-check-label" htmlFor={`brand-${brand.id}`}>{brand.name}</label>
                                                         </div>
