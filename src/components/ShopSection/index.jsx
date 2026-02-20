@@ -29,7 +29,9 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
         priceRange, setPriceRange, absoluteRange, 
         initialBrands, initialCategories,
         sortBy, setSortBy,
-        applyFilter
+        applyFilter,
+        parentCategory,
+        currentBrand
     } = hookResult;
     
     // Determine which brand/category setter to use based on type
@@ -39,6 +41,14 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
     if (type === "brand") {
         selectedBrands = hookResult.selectedCategories || [];
         setSelectedBrands = hookResult.setSelectedCategories || (() => {});
+    }
+    
+    if (type === "tag") {
+        selectedBrands = hookResult.selectedBrands || [];
+        setSelectedBrands = hookResult.setSelectedBrands || (() => {});
+        // Also handle categories for tag page
+        var selectedCategories = hookResult.selectedCategories || [];
+        var setSelectedCategories = hookResult.setSelectedCategories || (() => {});
     }
     
     const [isGrid, setIsGrid] = useState(true);
@@ -87,13 +97,104 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                             {(!data && loading) ? <SidebarSkeleton /> : (
                                 <>
                                     {/* Categories - Only show if "category" is in filters array */}
-                                    {filters.includes("category") && initialCategories.list.length > 0 && (
+                                    {filters.includes("category") && type === "category" && (
+                                        <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Categories</h6>
+                                            <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
+                                                {/* Show parent category if available */}
+                                                {parentCategory && (
+                                                    <li className="mb-24">
+                                                        <Link to={`/category/${parentCategory.slug}`} className="text-gray-600 hover-text-main-600 transition-1 text-sm">&larr; {parentCategory.name}</Link>
+                                                    </li>
+                                                )}
+                                                {/* Show sibling/related categories */}
+                                                {initialCategories.list.map(cat => (
+                                                    <li key={cat.id} className="mb-24">
+                                                        <Link to={`/category/${cat.slug}`} className={`text-gray-900 hover-text-main-600 transition-1 ${cat.slug === slug ? 'text-main-600 fw-bold' : ''}`}>{cat.name}</Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Categories Filter on Brand Page - Show as checkboxes */}
+                                    {filters.includes("category") && type === "brand" && initialCategories.list.length > 0 && (
                                         <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                                             <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">{initialCategories.title}</h6>
                                             <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
                                                 {initialCategories.list.map(cat => (
                                                     <li key={cat.id} className="mb-24">
-                                                        <Link to={`/category/${cat.slug}`} className={`text-gray-900 hover-text-main-600 transition-1 ${cat.slug === slug ? 'text-main-600 fw-bold' : ''}`}>{cat.name}</Link>
+                                                        <div className="form-check common-check">
+                                                            <input 
+                                                                className="form-check-input" 
+                                                                type="checkbox" 
+                                                                id={`cat-${cat.id}`}
+                                                                checked={selectedBrands.includes(cat.slug)} 
+                                                                onChange={() => {
+                                                                    setSelectedBrands(prev => 
+                                                                        prev.includes(cat.slug) ? prev.filter(c => c !== cat.slug) : [...prev, cat.slug]
+                                                                    );
+                                                                    applyFilter();
+                                                                }}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`cat-${cat.id}`}>{cat.name}</label>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Categories Filter on Tag Page */}
+                                    {type === "tag" && filters.includes("category") && initialCategories.list.length > 0 && (
+                                        <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">{initialCategories.title}</h6>
+                                            <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
+                                                {initialCategories.list.map(cat => (
+                                                    <li key={cat.id} className="mb-24">
+                                                        <div className="form-check common-check">
+                                                            <input 
+                                                                className="form-check-input" 
+                                                                type="checkbox" 
+                                                                id={`tag-cat-${cat.id}`}
+                                                                checked={selectedCategories.includes(cat.slug)} 
+                                                                onChange={() => {
+                                                                    setSelectedCategories(prev => 
+                                                                        prev.includes(cat.slug) ? prev.filter(c => c !== cat.slug) : [...prev, cat.slug]
+                                                                    );
+                                                                    applyFilter();
+                                                                }}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`tag-cat-${cat.id}`}>{cat.name}</label>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Brands Filter on Tag Page */}
+                                    {type === "tag" && filters.includes("brand") && initialBrands.length > 0 && (
+                                        <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Brands</h6>
+                                            <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
+                                                {initialBrands.map(brand => (
+                                                    <li key={brand.id} className="mb-24">
+                                                        <div className="form-check common-check">
+                                                            <input 
+                                                                className="form-check-input" 
+                                                                type="checkbox" 
+                                                                id={`tag-brand-${brand.id}`}
+                                                                checked={selectedBrands.includes(brand.slug)} 
+                                                                onChange={() => {
+                                                                    setSelectedBrands(prev => 
+                                                                        prev.includes(brand.slug) ? prev.filter(b => b !== brand.slug) : [...prev, brand.slug]
+                                                                    );
+                                                                    applyFilter();
+                                                                }}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`tag-brand-${brand.id}`}>{brand.name}</label>
+                                                        </div>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -125,7 +226,6 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                                                     />
                                                 </div>
                                                 <div className="flex-between flex-wrap-reverse gap-8 mt-16">
-                                                    {/* --- UPDATED BUTTON LOGIC --- */}
                                                     <button 
                                                         type="button" 
                                                         className="btn btn-main h-40 flex-align px-24 rounded-8" 
@@ -134,7 +234,7 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                                                             setSidebarOpen(false);
                                                         }}
                                                     >
-                                                        Filter
+                                                        Apply Price Filter
                                                     </button>
                                                     <div className="text-gray-900 fw-medium">৳{priceRange[0]} - ৳{priceRange[1]}</div>
                                                 </div>
@@ -142,8 +242,8 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                                         </div>
                                     )}
 
-                                    {/* Brands - Only show if "brand" is in filters array */}
-                                    {filters.includes("brand") && initialBrands.length > 0 && (
+                                    {/* Brands - Show on Category and Tag pages */}
+                                    {filters.includes("brand") && type !== "brand" && initialBrands.length > 0 && (
                                         <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                                             <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Brands</h6>
                                             <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
@@ -159,10 +259,25 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                                                                     setSelectedBrands(prev => 
                                                                         prev.includes(brand.slug) ? prev.filter(b => b !== brand.slug) : [...prev, brand.slug]
                                                                     );
+                                                                    applyFilter();
                                                                 }}
                                                             />
                                                             <label className="form-check-label" htmlFor={`brand-${brand.id}`}>{brand.name}</label>
                                                         </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Brands on Brand Page - Show all brands with current brand selected */}
+                                    {type === "brand" && initialBrands.length > 0 && (
+                                        <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
+                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Brands</h6>
+                                            <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
+                                                {initialBrands.map(brand => (
+                                                    <li key={brand.id} className="mb-24">
+                                                        <Link to={`/brand/${brand.slug}`} className={`text-gray-900 hover-text-main-600 transition-1 ${currentBrand?.slug === brand.slug ? 'text-main-600 fw-bold' : ''}`}>{brand.name}</Link>
                                                     </li>
                                                 ))}
                                             </ul>
