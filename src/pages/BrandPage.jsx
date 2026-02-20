@@ -1,6 +1,6 @@
-import React from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import ShopSection from "../components/ShopSection";
+import useBrand from "../hooks/useBrand";
 
 const BrandPage = () => {
   return (
@@ -9,7 +9,11 @@ const BrandPage = () => {
       <Breadcrumb title={"Shop by Brand"} />
 
       {/* ShopSection with brand filters (category, price) */}
-      <ShopSection type="brand" filters={["category", "price"]} />
+      <ShopSection 
+        type="brand" 
+        hook={useBrand}
+        filters={["category", "price"]} 
+      />
     </>
   );
 };

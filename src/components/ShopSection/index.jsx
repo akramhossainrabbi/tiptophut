@@ -19,18 +19,27 @@ const SidebarSkeleton = () => (
     </div>
 );
 
-const ShopSection = ({ type = "category", filters = [] }) => {
+const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) => {
     const { slug } = useParams();
-    const effectiveSlug = slug || "all";
 
+    const hookResult = hook(slug);
+    
     const { 
         data, products, meta, loading, hasMore, setPage, 
         priceRange, setPriceRange, absoluteRange, 
         initialBrands, initialCategories,
-        sortBy, setSortBy, 
-        selectedBrands, setSelectedBrands,
+        sortBy, setSortBy,
         applyFilter
-    } = useShopPage(type, effectiveSlug);
+    } = hookResult;
+    
+    // Determine which brand/category setter to use based on type
+    let selectedBrands = hookResult.selectedBrands || [];
+    let setSelectedBrands = hookResult.setSelectedBrands || (() => {});
+    
+    if (type === "brand") {
+        selectedBrands = hookResult.selectedCategories || [];
+        setSelectedBrands = hookResult.setSelectedCategories || (() => {});
+    }
     
     const [isGrid, setIsGrid] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -55,11 +64,7 @@ const ShopSection = ({ type = "category", filters = [] }) => {
         if (node) observer.current.observe(node);
     }, [loading, hasMore, setPage]);
 
-    const handleBrandToggle = (brandSlug) => {
-        setSelectedBrands(prev => 
-            prev.includes(brandSlug) ? prev.filter(b => b !== brandSlug) : [...prev, brandSlug]
-        );
-    };
+
 
     const handleReset = () => {
         setPriceRange(absoluteRange);
@@ -150,7 +155,11 @@ const ShopSection = ({ type = "category", filters = [] }) => {
                                                                 type="checkbox" 
                                                                 id={`brand-${brand.id}`}
                                                                 checked={selectedBrands.includes(brand.slug)} 
-                                                                onChange={() => handleBrandToggle(brand.slug)}
+                                                                onChange={() => {
+                                                                    setSelectedBrands(prev => 
+                                                                        prev.includes(brand.slug) ? prev.filter(b => b !== brand.slug) : [...prev, brand.slug]
+                                                                    );
+                                                                }}
                                                             />
                                                             <label className="form-check-label" htmlFor={`brand-${brand.id}`}>{brand.name}</label>
                                                         </div>
