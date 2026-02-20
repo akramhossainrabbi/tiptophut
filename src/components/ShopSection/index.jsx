@@ -293,7 +293,7 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                             <span className="text-gray-900 fw-medium">Showing {products.length} {meta && `of ${meta.total}`} products</span>
                             <div className="flex-align gap-16 flex-wrap">
                                 <div className="list-grid-btns flex-align gap-12">
-                                    <button onClick={() => setIsGrid(false)} className={`w-44 h-44 flex-center border rounded-6 ${!isGrid ? "bg-main-600 text-white border-main-600" : "border-gray-100 text-gray-400"}`}><i className="ph-bold ph-list-dashes" /></button>
+                                    <button onClick={() => setIsGrid(false)} className={`w-44 h-44 flex-center border rounded-6 ${!isGrid ? "bg-main-600 text-white border-main-600" : "border-gray-100 text-gray-400"}`}><i className="ph ph-list-dashes" /></button>
                                     <button onClick={() => setIsGrid(true)} className={`w-44 h-44 flex-center border rounded-6 ${isGrid ? "bg-main-600 text-white border-main-600" : "border-gray-100 text-gray-400"}`}><i className="ph ph-squares-four" /></button>
                                 </div>
                                 <select className="form-control common-input rounded-6 border-gray-100 w-auto cursor-pointer" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>

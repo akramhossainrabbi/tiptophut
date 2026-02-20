@@ -1,0 +1,87 @@
+/* --- Skeleton Shimmer Animation --- */
+.shimmer-base {
+    position: relative;
+    overflow: hidden;
+    background-color: #f2f2f2;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg, 
+            rgba(255, 255, 255, 0) 0%, 
+            rgba(255, 255, 255, 0.6) 50%, 
+            rgba(255, 255, 255, 0) 100%
+        );
+        animation: card-shimmer 1.5s infinite linear;
+    }
+}
+
+@keyframes card-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* --- Banner Skeleton Specifics --- */
+.banner-skeleton {
+    height: 200px; // Exact match to your minHeight
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    
+    .skeleton-content {
+        padding-left: 32px;
+        width: 100%;
+
+        .skeleton-title {
+            width: 300px;
+            height: 32px;
+            background: #e2e2e2;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .skeleton-subtitle {
+            width: 200px;
+            height: 18px;
+            background: #e2e2e2;
+            border-radius: 4px;
+        }
+    }
+
+    .skeleton-countdown {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 12px;
+        border-radius: 12px;
+        width: 200px;
+
+        .skeleton-label {
+            width: 60px;
+            height: 10px;
+            background: #e2e2e2;
+            margin: 0 auto 8px;
+            border-radius: 2px;
+        }
+
+        .skeleton-timer-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+
+            .skeleton-box {
+                width: 40px;
+                height: 40px;
+                background: #e2e2e2;
+                border-radius: 8px;
+            }
+        }
+    }
+}

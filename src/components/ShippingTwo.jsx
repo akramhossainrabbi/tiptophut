@@ -14,7 +14,7 @@ const ShippingTwo = () => {
                             <div className="">
                                 <h6 className="mb-0">Free Shipping</h6>
                                 <span className="text-sm text-heading">
-                                    Free shipping all over the US
+                                    Free shipping all over the Gazipur
                                 </span>
                             </div>
                         </div>
@@ -27,7 +27,7 @@ const ShippingTwo = () => {
                             <div className="">
                                 <h6 className="mb-0"> 100% Satisfaction</h6>
                                 <span className="text-sm text-heading">
-                                    Free shipping all over the US
+                                    100% satisfaction guaranteed
                                 </span>
                             </div>
                         </div>
@@ -40,7 +40,7 @@ const ShippingTwo = () => {
                             <div className="">
                                 <h6 className="mb-0"> Secure Payments</h6>
                                 <span className="text-sm text-heading">
-                                    Free shipping all over the US
+                                    Secure payments with multiple options
                                 </span>
                             </div>
                         </div>
@@ -53,7 +53,7 @@ const ShippingTwo = () => {
                             <div className="">
                                 <h6 className="mb-0"> 24/7 Support</h6>
                                 <span className="text-sm text-heading">
-                                    Free shipping all over the US
+                                    24/7 customer support for assistance
                                 </span>
                             </div>
                         </div>
