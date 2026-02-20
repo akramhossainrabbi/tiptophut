@@ -1,12 +1,12 @@
 import React from "react";
 import Slider from '../components/Slider';
 import FeaturedCategories from "../components/FeaturedCategories";
-import FlashDeal from "../components/FlashDeal";
-import TrendingProducts from "../components/TrendingProduts";
-import TopSelling from "../components/TopSelling";
-import RecommendedProducts from "../components/RecommendedProducts";
-import RecentlyViewed from "../components/RecentlyViewed";
-import FeaturedBrands from "../components/FeaturedBrands";
+import FlashDealLazy from "../components/FlashDeal/FlashDealLazy";
+import TrendingProductsLazy from "../components/TrendingProduts/TrendingProductsLazy";
+import TopSellingLazy from "../components/TopSelling/TopSellingLazy";
+import RecommendedProductsLazy from "../components/RecommendedProducts/RecommendedProductsLazy";
+import RecentlyViewedLazy from "../components/RecentlyViewed/RecentlyViewedLazy";
+import FeaturedBrandsLazy from "../components/FeaturedBrands/FeaturedBrandsLazy";
 import { useMeta } from '../hooks/useMeta';
 import { pageMetaTags } from '../utils/metaService';
 
@@ -21,29 +21,29 @@ const HomePage = () => {
     <>
       {helmetContent}
       
-      {/* BannerTwo */}
+      {/* BannerTwo - Load immediately (above fold) */}
       <Slider />
 
-      {/* FeaturedCategories */}
+      {/* FeaturedCategories - Load immediately (above fold, used in search) */}
       <FeaturedCategories />
 
-      {/* FlashDeal */}
-      <FlashDeal />
+      {/* FlashDeal - Lazy load on scroll */}
+      <FlashDealLazy />
 
-      {/* TopSelling */}
-      <TopSelling />
+      {/* TopSelling - Lazy load on scroll */}
+      <TopSellingLazy />
 
-      {/* TrendingProducts */}
-      <TrendingProducts />
+      {/* TrendingProducts - Lazy load on scroll */}
+      <TrendingProductsLazy />
 
-      {/* RecommendedProducts */}
-      <RecommendedProducts />
+      {/* RecommendedProducts - Lazy load on scroll */}
+      <RecommendedProductsLazy />
 
-      {/* RecentlyViewed */}
-      <RecentlyViewed />
+      {/* RecentlyViewed - Lazy load on scroll */}
+      <RecentlyViewedLazy />
 
-      {/* FeaturedBrands */}
-      <FeaturedBrands />
+      {/* FeaturedBrands - Lazy load on scroll */}
+      <FeaturedBrandsLazy />
     </>
   );
 };
