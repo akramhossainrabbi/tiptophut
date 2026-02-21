@@ -1,0 +1,19 @@
+# Redirect www to non-www
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.tiptophut\.com [NC]
+RewriteRule ^(.*)$ https://tiptophut.com/$1 [L,R=301]
+
+# Set index.html as default
+DirectoryIndex index.html
+Options -Indexes
+
+# React Router SPA rewrite
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+</IfModule>

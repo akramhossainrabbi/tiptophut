@@ -158,7 +158,7 @@ const BrandShop = () => {
                                     <option value="low_to_high">Price: Low to High</option>
                                     <option value="high_to_low">Price: High to Low</option>
                                 </select>
-                                <button onClick={() => setSidebarOpen(true)} className="d-lg-none w-44 h-44 flex-center border border-gray-100 rounded-6 bg-white"><i className="ph-bold ph-funnel" /></button>
+                                <button onClick={() => setSidebarOpen(true)} className="d-lg-none w-44 h-44 flex-center border border-gray-100 rounded-6 bg-white"><i className="ph ph-funnel" /></button>
                             </div>
                         </div>
 
