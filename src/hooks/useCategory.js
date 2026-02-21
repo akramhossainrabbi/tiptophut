@@ -32,8 +32,9 @@ const useCategory = (slug) => {
         setSelectedBrands([]);
         setSortBy("latest");
         setParentCategory(null);
+        setInitialCategories({ list: [], title: "" });
         isInitialized.current = false;
-        setFilterTick(0);
+        setFilterTick(prev => prev + 1);
     }, [slug]);
 
     // Reset on filter/sort changes

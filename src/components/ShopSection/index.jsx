@@ -99,7 +99,7 @@ const ShopSection = ({ type = "category", filters = [], hook = useShopPage }) =>
                                     {/* Categories - Only show if "category" is in filters array */}
                                     {filters.includes("category") && type === "category" && (
                                         <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
-                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">Categories</h6>
+                                            <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">{parentCategory?.name || "Categories"}</h6>
                                             <ul className="max-h-540 overflow-y-auto scroll-sm list-unstyled">
                                                 {/* Show parent category if available */}
                                                 {parentCategory && (
