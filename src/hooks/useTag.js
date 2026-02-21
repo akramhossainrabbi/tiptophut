@@ -21,6 +21,7 @@ const useTag = (slug) => {
     
     const [filterTick, setFilterTick] = useState(0);
     const isInitialized = useRef(false);
+    const priceRangeRef = useRef([0, 0]);
 
     // Reset when slug changes
     useEffect(() => {
@@ -28,12 +29,13 @@ const useTag = (slug) => {
         setPage(1);
         setHasMore(true);
         setPriceRange([0, 0]);
+        priceRangeRef.current = [0, 0];
         setAbsoluteRange([0, 0]);
         setSelectedBrands([]);
         setSelectedCategories([]);
         setSortBy("latest");
         isInitialized.current = false;
-        setFilterTick(0);
+        setFilterTick(prev => prev + 1);
     }, [slug]);
 
     // Reset on filter/sort changes
@@ -49,12 +51,12 @@ const useTag = (slug) => {
             const queryParams = new URLSearchParams({
                 page: pageNum,
                 sort: sortBy,
-                min_price: priceRange[0],
+                min_price: priceRangeRef.current[0],
             });
 
             // Only add max_price if it's been set (not 0)
-            if (priceRange[1] > 0) {
-                queryParams.append("max_price", priceRange[1]);
+            if (priceRangeRef.current[1] > 0) {
+                queryParams.append("max_price", priceRangeRef.current[1]);
             }
 
             if (selectedBrands.length > 0) {
@@ -80,6 +82,7 @@ const useTag = (slug) => {
                         const min = result.lowest_price;
                         const max = result.height_price;
                         setPriceRange([min, max]);
+                        priceRangeRef.current = [min, max];
                         setAbsoluteRange([min, max]);
                     }
                     const brandData = result.brands;
@@ -116,7 +119,10 @@ const useTag = (slug) => {
         sortBy, setSortBy,
         selectedBrands, setSelectedBrands,
         selectedCategories, setSelectedCategories,
-        applyFilter: () => setFilterTick(prev => prev + 1)
+        applyFilter: () => {
+            priceRangeRef.current = priceRange;
+            setFilterTick(prev => prev + 1);
+        }
     };
 };
 

@@ -1,6 +1,5 @@
 import Breadcrumb from "../components/Breadcrumb";
-import ShopSection from "../components/ShopSection";
-import useCategory from "../hooks/useCategory";
+import CategoryShop from "../components/CategoryShop";
 
 const CategoryPage = () => {
   return (
@@ -8,12 +7,8 @@ const CategoryPage = () => {
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Category"} />
 
-      {/* ShopSection with category filters (category, brand, price) */}
-      <ShopSection 
-        type="category" 
-        hook={useCategory}
-        filters={["category", "brand", "price"]} 
-      />
+      {/* CategoryShop Component */}
+      <CategoryShop />
     </>
   );
 };

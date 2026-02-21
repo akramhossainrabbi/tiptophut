@@ -370,9 +370,7 @@ const Header = ({ settings = {} }) => {
         <div className='container container-lg'>
           <nav className='header-inner flex-between'>
             {/* Logo */}
-            <div className='logo'>
-              <Logo className="navbar-brand" />
-            </div>
+            <Logo className="navbar-brand" />
             
             {/* Search Form */}
             <SearchForm />

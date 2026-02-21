@@ -30,7 +30,7 @@ const Logo = ({ className = "" }) => {
       <img 
         src="/logo.png"
         alt={siteTitle} 
-        style={{ height: '67px', width: 'auto', objectFit: 'contain' }}
+        style={{ height: '85px', width: '300px' }}
         onError={(e) => { e.target.style.display = 'none'; }} 
       />
     </Link>

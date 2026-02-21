@@ -1,6 +1,5 @@
 import Breadcrumb from "../components/Breadcrumb";
-import ShopSection from "../components/ShopSection";
-import useBrand from "../hooks/useBrand";
+import BrandShop from "../components/BrandShop";
 
 const BrandPage = () => {
   return (
@@ -8,12 +7,8 @@ const BrandPage = () => {
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Brand"} />
 
-      {/* ShopSection with brand filters (category, price) */}
-      <ShopSection 
-        type="brand" 
-        hook={useBrand}
-        filters={["category", "price"]} 
-      />
+      {/* BrandShop Component */}
+      <BrandShop />
     </>
   );
 };
