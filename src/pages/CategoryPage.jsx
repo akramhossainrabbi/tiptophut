@@ -8,11 +8,11 @@ const CategoryPage = () => {
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Category"} />
 
-      {/* ShopSection with category filters (brand, price) */}
+      {/* ShopSection with category filters (category, brand, price) */}
       <ShopSection 
         type="category" 
         hook={useCategory}
-        filters={["brand", "price"]} 
+        filters={["category", "brand", "price"]} 
       />
     </>
   );
