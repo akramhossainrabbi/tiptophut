@@ -101,7 +101,7 @@ const useTag = (slug) => {
         } finally {
             setLoading(false);
         }
-    }, [slug, sortBy, selectedBrands, selectedCategories, priceRange, filterTick]); 
+    }, [slug, sortBy, selectedBrands, selectedCategories, filterTick]); 
 
     useEffect(() => {
         if (slug) {

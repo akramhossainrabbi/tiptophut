@@ -103,7 +103,7 @@ const useCategory = (slug) => {
         } finally {
             setLoading(false);
         }
-    }, [slug, sortBy, selectedBrands, priceRange, filterTick]); 
+    }, [slug, sortBy, selectedBrands, filterTick]); 
 
     useEffect(() => {
         if (slug) {

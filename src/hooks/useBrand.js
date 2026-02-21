@@ -100,7 +100,7 @@ const useBrand = (slug) => {
         } finally {
             setLoading(false);
         }
-    }, [slug, sortBy, selectedCategories, priceRange, filterTick]); 
+    }, [slug, sortBy, selectedCategories, filterTick]); 
 
     useEffect(() => {
         if (slug) {
