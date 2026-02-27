@@ -8,12 +8,8 @@ const ProductDetailsPage= () => {
     const { slug } = useParams();
     const { product, loading, timeLeft } = useProductDetails(slug);
 
-    // Set meta tags for product details page
-    const helmetContent = useMeta(productMetaTags(product));
     return (
         <>
-            {helmetContent}
-            
             <BreadcrumbTwo title={"Product Details"} data={product} />
 
             {loading ? (

@@ -1,6 +1,8 @@
 import React from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import WishListSection from "../components/WishListSection";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 function WishlistPage() {
   const helmetContent = useMeta(pageMetaTags(

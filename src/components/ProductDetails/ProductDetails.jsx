@@ -34,6 +34,8 @@ const ProductDetails = ({ product, timeLeft }) => {
     const [quantity, setQuantity] = useState(1);
     const [mainImage, setMainImage] = useState(product?.thumbnail);
 
+    // Set meta tags for product details page
+    const helmetContent = useMeta(productMetaTags(product));
     useEffect(() => {
         setMainImage(product?.thumbnail);
     }, [product]);
@@ -80,6 +82,7 @@ const ProductDetails = ({ product, timeLeft }) => {
 
     return (
         <section className="product-details py-80">
+            {helmetContent}
             <div className="container container-lg">
                 <div className="row g-4">
                     <div className="col-lg-9">

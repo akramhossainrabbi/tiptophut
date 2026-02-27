@@ -1,6 +1,8 @@
 import React from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import BlogDetails from "../components/BlogDetails";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 const BlogDetailsPage = () => {
   const helmetContent = useMeta(pageMetaTags(
@@ -15,7 +17,7 @@ const BlogDetailsPage = () => {
   return (
     <>
       {helmetContent}
-      
+
       {/* Breadcrumb */}
       <Breadcrumb title={"Blog Details"} />
 

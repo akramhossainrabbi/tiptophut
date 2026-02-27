@@ -1,5 +1,7 @@
 import Breadcrumb from "../components/Breadcrumb";
 import BrandShop from "../components/BrandShop";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 const BrandPage = () => {
   const helmetContent = useMeta(pageMetaTags(
@@ -14,7 +16,7 @@ const BrandPage = () => {
   return (
     <>
       {helmetContent}
-      
+
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Brand"} />
 

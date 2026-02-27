@@ -1,6 +1,8 @@
 import React from "react";
 import Breadcrumb from "../components/Breadcrumb";
 import ShopSection from "../components/ShopSection";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 const ShopPage = ({ type = "category" }) => {
   const helmetContent = useMeta(pageMetaTags(
