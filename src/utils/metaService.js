@@ -26,8 +26,6 @@ export const generateMetaTags = (metaData = {}) => {
   };
 
   const metaTags = [
-    { charset: 'utf-8' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'theme-color', content: '#000000' },
     { name: 'title', content: meta.title },
     { name: 'description', content: meta.description },
