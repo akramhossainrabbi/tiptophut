@@ -53,7 +53,7 @@ export default function ForgotPassword() {
             Did not receive an email? Check your spam folder or try{' '}
             <button
               type="button"
-              className="btn btn-link p-0"
+              className="btn btn-link text-primary-600 p-0"
               onClick={() => {
                 setSubmitted(false);
                 setEmail('');
