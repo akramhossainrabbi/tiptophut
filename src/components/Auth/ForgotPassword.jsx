@@ -63,7 +63,7 @@ export default function ForgotPassword() {
             </button>
             .
           </p>
-          <Link to="/login" className="btn btn-main py-18 px-40">
+          <Link to="/login" className="btn btn-outline-primary py-18 px-40">
             Back to Login
           </Link>
         </div>
@@ -95,7 +95,7 @@ export default function ForgotPassword() {
             {loading ? 'Sending...' : 'Send Reset Link'}
           </button>
           <p className="text-center">
-            <Link to="/login" className="btn btn-link p-0">
+            <Link to="/login" className="text-primary text-decoration-none">
               Back to Login
             </Link>
           </p>

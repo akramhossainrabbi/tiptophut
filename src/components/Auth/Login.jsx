@@ -26,13 +26,13 @@ export default function Login() {
                         <input type="text" name="email" className="common-input" onChange={handleChange} required />
                     </div>
                     <div className="mb-24">
-                        <label className="text-neutral-900 text-lg mb-8 fw-medium">Password *</label>
+                        <div className="d-flex justify-content-between align-items-center mb-8">
+                            <label className="text-neutral-900 text-lg fw-medium mb-0">Password *</label>
+                            <Link to="/forgot-password" className="text-primary text-decoration-none small">
+                                Forgot Password?
+                            </Link>
+                        </div>
                         <input type="password" name="password" className="common-input" onChange={handleChange} required />
-                    </div>
-                    <div className="mb-24 text-end">
-                        <Link to="/forgot-password" className="btn btn-link p-0 text-decoration-none">
-                            Forgot Password?
-                        </Link>
                     </div>
                     <button type="submit" className="btn btn-main py-18 px-40" disabled={loading}>
                         {loading ? 'Logging in...' : 'Log in'}
