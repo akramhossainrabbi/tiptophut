@@ -5,9 +5,7 @@ const ForgotPasswordPage = () => {
     <section className="account py-80">
       <div className="container container-lg">
         <div className="row gy-4 justify-content-center">
-          <div className="col-xl-6">
-            <ForgotPassword />
-          </div>
+          <ForgotPassword />
         </div>
       </div>
     </section>

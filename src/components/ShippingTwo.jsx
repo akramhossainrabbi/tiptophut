@@ -14,7 +14,7 @@ const ShippingTwo = () => {
                             <div className="">
                                 <h6 className="mb-0">Free Shipping</h6>
                                 <span className="text-sm text-heading">
-                                    Free shipping all over the Gazipur
+                                    Free shipping all over Joydebpur, Gazipur
                                 </span>
                             </div>
                         </div>
