@@ -26,8 +26,6 @@ export const generateMetaTags = (metaData = {}) => {
   };
 
   const metaTags = [
-    { charset: 'utf-8' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { name: 'theme-color', content: '#000000' },
     { name: 'title', content: meta.title },
     { name: 'description', content: meta.description },
@@ -53,7 +51,7 @@ export const generateMetaTags = (metaData = {}) => {
 
   // Add canonical URL if available
   if (meta.canonicalUrl) {
-    metaTags.push({ rel: 'canonical', href: meta.canonicalUrl });
+    metaTags.push({ tag: 'link', rel: 'canonical', href: meta.canonicalUrl });
   }
 
   return metaTags;
@@ -119,6 +117,6 @@ export const pageMetaTags = (pageTitle, pageDescription, options = {}) => {
     keywords: options.keywords || 'TIPTOPHUT',
     ogImage: options.ogImage || null,
     ogUrl: options.ogUrl || (typeof window !== 'undefined' ? window.location.href : ''),
-    canonicalUrl: options.canonicalUrl,
+    canonicalUrl: options.canonicalUrl || 'https://tiptophut.com/',
   };
 };

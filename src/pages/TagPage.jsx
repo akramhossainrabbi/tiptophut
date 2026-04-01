@@ -1,19 +1,27 @@
 import Breadcrumb from "../components/Breadcrumb";
-import ShopSection from "../components/ShopSection";
-import useTag from "../hooks/useTag";
+import TagShop from "../components/TagShop";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 const TagPage = () => {
+  const helmetContent = useMeta(pageMetaTags(
+    'Tag - TIPTOPHUT',
+    'Welcome to TIPTOPHUT, your ultimate destination for online shopping. Explore our wide range of products from various categories and enjoy the best deals and discounts.',
+    { 
+      keywords: 'e-commerce, online shopping, marketplace, TIPTOPHUT',
+      canonicalUrl: 'https://tiptophut.com/'
+    }
+  ));
+
   return (
     <>
+      {helmetContent}
+
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Tag"} />
 
-      {/* ShopSection with tag filters (category, brand, price) */}
-      <ShopSection 
-        type="tag" 
-        hook={useTag}
-        filters={["category", "brand", "price"]} 
-      />
+      {/* TagShop Component */}
+      <TagShop />
     </>
   );
 };

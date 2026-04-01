@@ -14,7 +14,10 @@ const HomePage = () => {
   const helmetContent = useMeta(pageMetaTags(
     'Home - TIPTOPHUT',
     'Welcome to TIPTOPHUT, your ultimate destination for online shopping. Explore our wide range of products from various categories and enjoy the best deals and discounts.',
-    { keywords: 'e-commerce, online shopping, marketplace, TIPTOPHUT' }
+    { 
+      keywords: 'e-commerce, online shopping, marketplace, TIPTOPHUT',
+      canonicalUrl: 'https://tiptophut.com/'
+    }
   ));
 
   return (

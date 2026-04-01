@@ -18,9 +18,16 @@ export const useMeta = (metaData = {}) => {
   return (
     <Helmet>
       <title>{metaData.title || 'TIPTOPHUT'}</title>
-      {metaTags.map((meta, index) => (
-        <meta key={index} {...meta} />
-      ))}
+
+      {/* Render all meta tags */}
+      {metaTags.map((meta, index) => {
+        if (meta.tag === 'link') {
+          return <link key={index} rel={meta.rel} href={meta.href} />;
+        }
+        return <meta key={index} {...meta} />;
+      })}
+
+      {/* Favicon */}
       {/* <link {...faviconLink} /> */}
     </Helmet>
   );

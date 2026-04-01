@@ -166,31 +166,13 @@ const Header = ({ settings = {} }) => {
       <div className='overlay' />
       <div className={`side-overlay ${(menuActive || activeCategory) && "show"}`} />
       
-      {/* Search Box */}
-      <form action='#' className={`search-box ${activeSearch && "active"}`}>
-        <button 
-          onClick={handleSearchToggle} 
-          type='button' 
-          className='search-box__close position-absolute inset-block-start-0 inset-inline-end-0 m-16 w-48 h-48 border border-gray-100 rounded-circle flex-center text-white hover-text-gray-800 hover-bg-white text-2xl transition-1'
-        >
-          <i className='ph ph-x' />
-        </button>
-        <div className='container'>
-          <div className='position-relative'>
-            <input
-              type='text'
-              className='form-control py-16 px-24 text-xl rounded-pill pe-64'
-              placeholder='Search for a product or brand'
-            />
-            <button
-              type='submit'
-              className={`w-48 h-48 ${variantClass.searchButton} rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8`}
-            >
-              <i className='ph ph-magnifying-glass' />
-            </button>
-          </div>
-        </div>
-      </form>
+      {/* Mobile Search Overlay */}
+      <SearchForm 
+        isMobile={true} 
+        activeSearch={activeSearch} 
+        handleSearchToggle={handleSearchToggle} 
+      />
+      
       
       {/* Mobile Menu */}
       <div className={`mobile-menu scroll-sm d-lg-none d-block ${menuActive && "active"}`}>
@@ -370,9 +352,7 @@ const Header = ({ settings = {} }) => {
         <div className='container container-lg'>
           <nav className='header-inner flex-between'>
             {/* Logo */}
-            <div className='logo'>
-              <Logo className="navbar-brand" />
-            </div>
+            <Logo className="navbar-brand" />
             
             {/* Search Form */}
             <SearchForm />

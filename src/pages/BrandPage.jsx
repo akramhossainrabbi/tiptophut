@@ -1,19 +1,27 @@
 import Breadcrumb from "../components/Breadcrumb";
-import ShopSection from "../components/ShopSection";
-import useBrand from "../hooks/useBrand";
+import BrandShop from "../components/BrandShop";
+import { useMeta } from '../hooks/useMeta';
+import { pageMetaTags } from '../utils/metaService';
 
 const BrandPage = () => {
+  const helmetContent = useMeta(pageMetaTags(
+    'Brand - TIPTOPHUT',
+    'Welcome to TIPTOPHUT, your ultimate destination for online shopping. Explore our wide range of products from various categories and enjoy the best deals and discounts.',
+    { 
+      keywords: 'e-commerce, online shopping, marketplace, TIPTOPHUT',
+      canonicalUrl: 'https://tiptophut.com/'
+    }
+  ));
+
   return (
     <>
+      {helmetContent}
+
       {/* Breadcrumb */}
       <Breadcrumb title={"Shop by Brand"} />
 
-      {/* ShopSection with brand filters (category, price) */}
-      <ShopSection 
-        type="brand" 
-        hook={useBrand}
-        filters={["category", "price"]} 
-      />
+      {/* BrandShop Component */}
+      <BrandShop />
     </>
   );
 };
