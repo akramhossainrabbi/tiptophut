@@ -22,6 +22,8 @@ import ShippingTwo from "./components/ShippingTwo";
 import NewsletterTwo from "./components/Common/Newsletter";
 import FooterTwo from "./components/Common/Footer";
 import BottomFooter from "./components/Common/BottomFooter";
+import ProfilePage from "./pages/ProfilePage";
+import ForgotPassword from "./components/Auth/ForgotPassword";
 
 function App() {
   
@@ -92,6 +94,8 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/login" element={<AccountPage />} />
+        <Route path="/forgot-password" element={<AccountPage specialTab="forgotPassword" />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog-details" element={<BlogDetailsPage />} />
         <Route path="/contact" element={<ContactPage />} />
