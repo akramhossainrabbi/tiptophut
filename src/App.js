@@ -23,7 +23,7 @@ import NewsletterTwo from "./components/Common/Newsletter";
 import FooterTwo from "./components/Common/Footer";
 import BottomFooter from "./components/Common/BottomFooter";
 import ProfilePage from "./pages/ProfilePage";
-import ForgotPassword from "./components/Auth/ForgotPassword";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function App() {
   
@@ -94,7 +94,7 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/login" element={<AccountPage />} />
-        <Route path="/forgot-password" element={<AccountPage specialTab="forgotPassword" />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog-details" element={<BlogDetailsPage />} />
