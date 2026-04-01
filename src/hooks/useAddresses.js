@@ -42,7 +42,7 @@ const useAddresses = () => {
       const json = await res.json();
       if (!res.ok) throw json;
 
-      const data = json.data || [];
+      const data = json.addresses || [];
       setAddresses(data);
       localStorage.setItem(
         CACHE_KEYS.ADDRESSES,
