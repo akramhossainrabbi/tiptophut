@@ -3,8 +3,7 @@ import { toast } from 'react-toastify';
 
 export default function AddressForm({ address = null, onSubmit, onCancel, loading }) {
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
     address: '',
     phone: '',
@@ -20,8 +19,7 @@ export default function AddressForm({ address = null, onSubmit, onCancel, loadin
   useEffect(() => {
     if (address) {
       setFormData({
-        first_name: address.first_name || '',
-        last_name: address.last_name || '',
+        name: address.name || '',
         email: address.email || '',
         address: address.address || '',
         phone: address.phone || '',
@@ -48,7 +46,7 @@ export default function AddressForm({ address = null, onSubmit, onCancel, loadin
 
   const validateForm = () => {
     const newErrors = {};
-    const requiredFields = ['first_name', 'last_name', 'email', 'address', 'phone', 'city', 'country', 'postal_code'];
+    const requiredFields = ['name', 'email', 'address', 'phone', 'city', 'country', 'postal_code'];
 
     requiredFields.forEach((field) => {
       if (!formData[field]) {
@@ -77,27 +75,16 @@ export default function AddressForm({ address = null, onSubmit, onCancel, loadin
   return (
     <form onSubmit={handleSubmit}>
       <div className="row">
-        <div className="col-md-6 mb-24">
-          <label className="text-neutral-900 text-lg mb-8 fw-medium">First Name *</label>
+        <div className="col-12 mb-24">
+          <label className="text-neutral-900 text-lg mb-8 fw-medium">Contact Name *</label>
           <input
             type="text"
-            name="first_name"
-            className={`common-input ${errors.first_name ? 'is-invalid' : ''}`}
-            value={formData.first_name}
+            name="name"
+            className={`common-input ${errors.name ? 'is-invalid' : ''}`}
+            value={formData.name}
             onChange={handleChange}
           />
-          {errors.first_name && <small className="text-danger">{errors.first_name}</small>}
-        </div>
-        <div className="col-md-6 mb-24">
-          <label className="text-neutral-900 text-lg mb-8 fw-medium">Last Name *</label>
-          <input
-            type="text"
-            name="last_name"
-            className={`common-input ${errors.last_name ? 'is-invalid' : ''}`}
-            value={formData.last_name}
-            onChange={handleChange}
-          />
-          {errors.last_name && <small className="text-danger">{errors.last_name}</small>}
+          {errors.name && <small className="text-danger">{errors.name}</small>}
         </div>
         <div className="col-md-6 mb-24">
           <label className="text-neutral-900 text-lg mb-8 fw-medium">Email Address *</label>
