@@ -47,6 +47,14 @@ const OrderList = () => {
     setIsModalOpen(true);
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -118,7 +126,7 @@ const OrderList = () => {
                 {orders.map((order) => (
                   <tr key={order.id}>
                     <td className="fw-medium">#{order.order_number}</td>
-                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                    <td>{formatDate(order.created_at)}</td>
                     <td className="fw-medium">{parseFloat(order.grand_total).toFixed(2)}</td>
                     <td>{order.number_of_item}</td>
                     <td>
