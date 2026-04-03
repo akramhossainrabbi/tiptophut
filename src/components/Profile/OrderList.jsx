@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useOrders } from '../../hooks/useOrders';
-import { toast } from 'react-toastify';
+import OrderDetailsModal from './OrderDetailsModal';
 
 const OrderList = () => {
   const { orders, loading, error, pagination, fetchOrders } = useOrders();
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleStatusFilter = (status) => {
     setSelectedStatus(status);
@@ -15,19 +17,34 @@ const OrderList = () => {
     fetchOrders(page, selectedStatus);
   };
 
-  const getStatusBadgeClass = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'pending':
+  const getStatusLabel = (statusCode) => {
+    const statusMap = {
+      0: 'Pending',
+      1: 'Processing',
+      2: 'Completed',
+      3: 'Cancelled',
+    };
+    return statusMap[statusCode] || 'Unknown';
+  };
+
+  const getStatusBadgeClass = (statusCode) => {
+    switch (statusCode) {
+      case 0:
         return 'badge bg-warning';
-      case 'processing':
+      case 1:
         return 'badge bg-info';
-      case 'completed':
+      case 2:
         return 'badge bg-success';
-      case 'cancelled':
+      case 3:
         return 'badge bg-danger';
       default:
         return 'badge bg-secondary';
     }
+  };
+
+  const handleViewOrder = (order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
   };
 
   if (error) {
@@ -100,21 +117,19 @@ const OrderList = () => {
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id}>
-                    <td className="fw-medium">#{order.id}</td>
+                    <td className="fw-medium">#{order.order_number}</td>
                     <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                    <td className="fw-medium">{order.total_price || order.total}</td>
-                    <td>{order.items_count || order.order_items?.length || 0}</td>
+                    <td className="fw-medium">{parseFloat(order.grand_total).toFixed(2)}</td>
+                    <td>{order.number_of_item}</td>
                     <td>
-                      <span className={getStatusBadgeClass(order.status)}>
-                        {order.status}
+                      <span className={getStatusBadgeClass(order.order_status)}>
+                        {getStatusLabel(order.order_status)}
                       </span>
                     </td>
                     <td>
                       <button
                         className="btn btn-sm btn-outline-primary"
-                        onClick={() => {
-                          toast.info(`Order #${order.id} details - Feature coming soon`);
-                        }}
+                        onClick={() => handleViewOrder(order)}
                       >
                         View
                       </button>
@@ -172,6 +187,16 @@ const OrderList = () => {
           <p className="mb-0">No orders found. Start shopping now!</p>
         </div>
       )}
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal 
+        order={selectedOrder} 
+        isOpen={isModalOpen} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedOrder(null);
+        }}
+      />
     </div>
   );
 };
