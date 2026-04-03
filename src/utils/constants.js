@@ -17,6 +17,7 @@ export const CACHE_KEYS = {
   USER: "auth_user",
   TOKEN: "auth_token",
   ADDRESSES: 'addresses-cache-v1',
+  ORDERS: 'orders-cache-v1',
 };
 
 export const CACHE_EXPIRY = {
@@ -31,4 +32,5 @@ export const CACHE_EXPIRY = {
   RECENT_PRODUCTS: 10 * 60 * 1000, // 10 minutes
   FEATURED_BRANDS: 10 * 60 * 1000, // 10 minutes
   ADDRESSES: 5 * 60 * 1000, // 5 minutes - addresses change frequently
+  ORDERS: 10 * 60 * 1000, // 10 minutes - orders don't change frequently
 };
