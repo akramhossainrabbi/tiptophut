@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import UpdateProfile from '../components/Profile/UpdateProfile';
 import ChangePassword from '../components/Profile/ChangePassword';
 import AddressManagement from '../components/Profile/AddressManagement';
+import OrderList from '../components/Profile/OrderList';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -47,7 +48,7 @@ export default function ProfilePage() {
                       Addresses
                     </button>
                   </li>
-                  <li>
+                  <li className="mb-16">
                     <button
                       type="button"
                       className={`btn btn-link p-0 text-start w-100 ${
@@ -56,6 +57,17 @@ export default function ProfilePage() {
                       onClick={() => setActiveTab('password')}
                     >
                       Change Password
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      className={`btn btn-link p-0 text-start w-100 ${
+                        activeTab === 'orders' ? 'text-main fw-bold' : 'text-neutral-600'
+                      }`}
+                      onClick={() => setActiveTab('orders')}
+                    >
+                      My Orders
                     </button>
                   </li>
                 </ul>
@@ -68,6 +80,7 @@ export default function ProfilePage() {
               {activeTab === 'profile' && <UpdateProfile />}
               {activeTab === 'addresses' && <AddressManagement />}
               {activeTab === 'password' && <ChangePassword />}
+              {activeTab === 'orders' && <OrderList />}
             </div>
           </div>
         </div>
