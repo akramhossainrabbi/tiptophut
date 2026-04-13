@@ -19,7 +19,19 @@ export const getProductStatus = (product) => {
   let activeDiscount = discount || 0;
   let activeType = discount_type; // 0 or 1
 
-  if (has_deal && flash_deal) {
+  const isDealActive = (() => {
+    if (!has_deal || !flash_deal) return false;
+
+    const now = new Date();
+    const startDate = flash_deal.start_date ? new Date(flash_deal.start_date) : null;
+    const endDate = flash_deal.end_date ? new Date(flash_deal.end_date) : null;
+
+    if (startDate && now < startDate) return false;
+    if (endDate && now > endDate) return false;
+    return true;
+  })();
+
+  if (isDealActive) {
     activeDiscount = flash_deal.discount;
     activeType = flash_deal.discount_type;
   }

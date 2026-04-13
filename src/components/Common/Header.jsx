@@ -9,7 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from "../../context/CartContext";
 import Logo from "../Logo";
 
-const Header = ({ settings = {} }) => {
+const Header = ({ settings = {}, onCartClick = () => {} }) => {
   const { generalSettings, loading, error } = useAppSettings();
 
   // State hooks
@@ -124,7 +124,6 @@ const Header = ({ settings = {} }) => {
         badge: "New",
         badgeColor: "bg-warning-600",
         submenu: [
-          { title: "Cart", path: "/cart" },
           { title: "Wishlist", path: "/wishlist" },
           { title: "Checkout", path: "/checkout" },
           { title: "Account", path: "/login" }
@@ -408,7 +407,11 @@ const Header = ({ settings = {} }) => {
                   </Link>
                 )}
                 
-                <Link to='/cart' className='flex-align gap-4 item-hover'>
+                <button
+                  onClick={onCartClick}
+                  type='button'
+                  className='flex-align gap-4 item-hover border-0 bg-transparent p-0'
+                >
                   <span className={`text-2xl ${variantClass.iconColor} d-flex position-relative me-6 mt-6`}>
                     <i className='ph ph-shopping-cart-simple' />
                     <span className={`w-16 h-16 flex-center rounded-circle ${variantClass.cartBadge} text-white text-xs position-absolute top-n6 end-n4`}>
@@ -418,7 +421,7 @@ const Header = ({ settings = {} }) => {
                   <span className='text-md text-gray-500 d-none d-lg-flex'>
                     Cart
                   </span>
-                </Link>
+                </button>
               </div>
             </div>
           </nav>
@@ -536,7 +539,11 @@ const Header = ({ settings = {} }) => {
                     </Link>
                   )}
                   
-                  <Link to='/cart' className='flex-align gap-4 item-hover'>
+                  <button
+                    onClick={onCartClick}
+                    type='button'
+                    className='flex-align gap-4 item-hover border-0 bg-transparent p-0'
+                  >
                     <span className='text-2xl text-gray-700 d-flex position-relative me-6 mt-6'>
                       <i className='ph ph-shopping-cart-simple' />
                       <span className={`w-16 h-16 flex-center rounded-circle ${variantClass.cartBadge} text-white text-xs position-absolute top-n6 end-n4`}>
@@ -546,7 +553,7 @@ const Header = ({ settings = {} }) => {
                     <span className='text-md text-gray-500 d-none d-lg-flex'>
                       Cart
                     </span>
-                  </Link>
+                  </button>
                 </div>
               </div>
               

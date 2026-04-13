@@ -1,4 +1,5 @@
 import React from 'react';
+import { assetsURL } from '../../utils/constants';
 
 const OrderDetailsModal = ({ order, isOpen, onClose }) => {
   if (!isOpen || !order) return null;
@@ -65,7 +66,7 @@ const OrderDetailsModal = ({ order, isOpen, onClose }) => {
                             <div className="d-flex align-items-center gap-2">
                               {item.product?.thumb && (
                                 <img
-                                  src={`${process.env.REACT_APP_API_URL}/${item.product.thumb}`}
+                                  src={`${assetsURL}${item.product.thumb}`}
                                   alt={item.product?.name}
                                   style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
                                 />

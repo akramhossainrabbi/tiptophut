@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
 import ShopPage from "./pages/ShopPage";
@@ -24,8 +25,13 @@ import FooterTwo from "./components/Common/Footer";
 import BottomFooter from "./components/Common/BottomFooter";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import CartDrawer from "./components/CartDrawer";
+import SectionProductsPage from "./pages/SectionProductsPage";
 
 function App() {
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const openCartDrawer = () => setIsCartDrawerOpen(true);
+  const closeCartDrawer = () => setIsCartDrawerOpen(false);
   
   return (
     <>
@@ -41,6 +47,7 @@ function App() {
 
       {/* Header */}
       <Header
+        onCartClick={openCartDrawer}
         settings={{
           showTopBar: true, // Show/hide top bar
           showPhone: true,  // Show/hide phone number
@@ -99,6 +106,7 @@ function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog-details" element={<BlogDetailsPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/section/:sectionKey" element={<SectionProductsPage />} />
       </Routes>
 
       {/* ShippingTwo */}
@@ -112,6 +120,12 @@ function App() {
 
       {/* BottomFooter */}
       <BottomFooter />
+
+      <CartDrawer
+        isOpen={isCartDrawerOpen}
+        onClose={closeCartDrawer}
+        onOpen={openCartDrawer}
+      />
     </>
   );
 }

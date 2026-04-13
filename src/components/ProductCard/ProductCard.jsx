@@ -5,15 +5,21 @@ import { useCart } from '../../context/CartContext';
 import { getProductStatus } from '../../utils/productUtils';
 
 const ProductCard = ({ product, isListView = false }) => {
-    const { addToCart } = useCart();
+    const { addToCart, updateQuantity, getCartItemQty } = useCart();
     const [isAdding, setIsAdding] = useState(false);
     const { originalPrice, finalPrice, discountLabel, hasDiscount, isOutOfStock } = getProductStatus(product);
+    const cartQty = getCartItemQty(product.id);
 
     const handleAdd = async (e) => {
         e.preventDefault();
         setIsAdding(true);
         await addToCart(product, 1, finalPrice);
         setIsAdding(false);
+    };
+
+    const handleQtyChange = (e, nextQty) => {
+        e.preventDefault();
+        updateQuantity(product.id, nextQty);
     };
 
     return (
@@ -57,13 +63,36 @@ const ProductCard = ({ product, isListView = false }) => {
 
                 {/* Button Action - This stays at the bottom */}
                 <div className="mt-auto w-100">
-                    <button 
-                        onClick={handleAdd} 
-                        disabled={isAdding || isOutOfStock}
-                        className="btn bg-main-50 text-main-600 hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 w-100 flex-center gap-8 border-0"
-                    >
-                        {isAdding ? "..." : "Add To Cart"} <i className="ph ph-shopping-cart" />
-                    </button>
+                    {cartQty > 0 ? (
+                        <div className="quantity-control border border-main-600 rounded-pill p-4 d-flex align-items-center justify-content-between bg-main-50">
+                            <button
+                                onClick={(e) => handleQtyChange(e, cartQty - 1)}
+                                className="quantity-control__button border-0 bg-main-600 text-white h-32 w-32 flex-center rounded-circle"
+                            >
+                                <i className="ph ph-minus" />
+                            </button>
+                            <input
+                                type="number"
+                                className="quantity-control__input border-0 text-center w-48 text-heading fw-bold bg-transparent"
+                                value={cartQty}
+                                readOnly
+                            />
+                            <button
+                                onClick={(e) => handleQtyChange(e, cartQty + 1)}
+                                className="quantity-control__button border-0 bg-main-600 text-white h-32 w-32 flex-center rounded-circle"
+                            >
+                                <i className="ph ph-plus" />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleAdd}
+                            disabled={isAdding || isOutOfStock}
+                            className="btn bg-main-600 text-white py-11 px-24 rounded-pill w-100 flex-center gap-8 border-0 fw-semibold"
+                        >
+                            {isAdding ? "..." : "Add"} <i className="ph ph-plus-circle text-xl" />
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

@@ -15,11 +15,7 @@ const Checkout = () => {
 
     // 1. Re-fetch data every time user enters the checkout page
     useEffect(() => {
-        if (user) {
-            fetchCheckoutData();
-        } else if (!localStorage.getItem('token')) {
-            navigate('/login');
-        }
+        fetchCheckoutData();
     }, [user, fetchCheckoutData, navigate]);
 
     // 2. Populate form when address is found

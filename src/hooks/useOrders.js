@@ -1,11 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { CACHE_KEYS, CACHE_EXPIRY } from '../utils/constants';
+import { baseURL, CACHE_KEYS, CACHE_EXPIRY } from '../utils/constants';
 
 export const useOrders = () => {
   const { user } = useAuth();
-  const baseURL = process.env.REACT_APP_API_URL;
-  
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

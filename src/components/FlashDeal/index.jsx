@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Slider from 'react-slick';
 import { Link } from 'react-router-dom';
 import useFlashDeal from '../../hooks/useFlashDeal';
 import { calculateTimeLeft } from '../../utils/countdown';
@@ -22,32 +21,25 @@ const FlashDeal = () => {
         return () => clearInterval(timer);
     }, [data?.end_date]);
 
-    const settings = useMemo(() => ({
-        dots: false,
-        arrows: true,
-        infinite: (data?.products?.length > 6),
-        speed: 1000,
-        slidesToShow: 6,
-        slidesToScroll: 1,
-        autoplay: true,
-        responsive: [
-            { breakpoint: 1599, settings: { slidesToShow: 5 } },
-            { breakpoint: 1399, settings: { slidesToShow: 3 } },
-            { breakpoint: 1199, settings: { slidesToShow: 2 } },
-            { breakpoint: 575, settings: { slidesToShow: 1 } },
-        ],
-    }), [data?.products?.length]);
+    const products = useMemo(() => data?.products || [], [data?.products]);
+    const isExpired = useMemo(() => {
+        if (!data?.end_date) return false;
+        return new Date(data.end_date) < new Date();
+    }, [data?.end_date]);
+
+    if (!loading && (!data || isExpired || products.length === 0)) {
+        return null;
+    }
 
     return (
         <section className="deals-weeek pt-80">
             <div className="container container-lg">
-                <div className="border border-gray-100 p-24 rounded-16">
-                    <div className="section-heading mb-24 flex-between">
-                        <h5 className="mb-0">Flash Deals</h5>
-                        <Link to="/shop" className="text-sm fw-medium text-main-600 hover-text-decoration-underline">
-                            View All Deals
-                        </Link>
-                    </div>
+                <div className="section-heading mb-24 flex-between">
+                    <h5 className="mb-0">Flash Deals</h5>
+                    <Link to="/section/flash-deals" className="btn btn-outline-main rounded-pill px-20 py-8">
+                        View All
+                    </Link>
+                </div>
 
                     {/* Banner Section with Dynamic Image */}
                     {loading ? (
@@ -90,23 +82,20 @@ const FlashDeal = () => {
                         </div>
                     )}
 
-                    <div className="deals-week-slider arrow-style-two">
-                        <Slider {...settings}>
-                            {loading ? (
-                                [...Array(6)].map((_, i) => (
-                                    <div key={i} className="px-2">
-                                        <ProductSkeleton />
-                                    </div>
-                                ))
-                            ) : (
-                                data?.products?.map(product => (
-                                    <div key={product.id} className="px-2">
-                                        <ProductCard product={product} />
-                                    </div>
-                                ))
-                            )}
-                        </Slider>
-                    </div>
+                <div className="row g-12">
+                    {loading ? (
+                        [...Array(6)].map((_, i) => (
+                            <div key={i} className="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                                <ProductSkeleton />
+                            </div>
+                        ))
+                    ) : (
+                        products.map((product) => (
+                            <div key={product.id} className="col-6 col-lg-4 col-xl-3 col-xxl-2">
+                                <ProductCard product={product} />
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </section>
