@@ -136,7 +136,7 @@ const OrderList = () => {
                     </td>
                     <td>
                       <button
-                        className="btn btn-sm btn-outline-primary"
+                        className="btn btn-sm btn-primary"
                         onClick={() => handleViewOrder(order)}
                       >
                         View
@@ -149,7 +149,7 @@ const OrderList = () => {
           </div>
 
           {/* Pagination */}
-          {pagination.last_page > 1 && (
+          {pagination && typeof pagination.last_page === 'number' && pagination.last_page > 1 && (
             <nav aria-label="Page navigation" className="mt-24">
               <ul className="pagination justify-content-center">
                 <li className={`page-item ${pagination.current_page === 1 ? 'disabled' : ''}`}>
@@ -186,9 +186,11 @@ const OrderList = () => {
             </nav>
           )}
 
-          <div className="text-center mt-16 text-muted small">
-            Showing page {pagination.current_page} of {pagination.last_page} ({pagination.total} total orders)
-          </div>
+          {pagination && (
+            <div className="text-center mt-16 text-muted small">
+              Showing page {pagination.current_page} of {pagination.last_page} ({pagination.total} total orders)
+            </div>
+          )}
         </>
       ) : (
         <div className="alert alert-info text-center">

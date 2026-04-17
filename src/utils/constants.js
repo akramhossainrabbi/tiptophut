@@ -1,5 +1,11 @@
-// Base URL for API calls
-export const baseURL = process.env.REACT_APP_API_URL || 'https://api.tiptophut.com';
+const trimTrailingSlash = (value = "") => value.replace(/\/+$/, "");
+
+const API_URL = process.env.REACT_APP_API_URL || "https://api.tiptophut.com";
+const ASSET_URL = process.env.REACT_APP_ASSET_URL || "https://api.tiptophut.com";
+
+// Centralized base URLs
+export const baseURL = trimTrailingSlash(API_URL);
+export const assetsURL = `${trimTrailingSlash(ASSET_URL)}/`;
 
 // Cache settings
 export const CACHE_KEYS = {

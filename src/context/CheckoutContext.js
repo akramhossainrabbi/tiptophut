@@ -3,6 +3,7 @@ import { baseURL, CACHE_KEYS } from "../utils/constants";
 import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
 import { useCart } from "./CartContext";
+import { getDeviceToken } from "../utils/deviceHelper";
 
 const CheckoutContext = createContext(null);
 
@@ -12,51 +13,103 @@ export const CheckoutProvider = ({ children }) => {
     const [existingAddress, setExistingAddress] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for the button
-    const { clearCartState } = useCart();
+    const { cartItems, summary, clearCartState } = useCart();
+
+    const buildPackagesFromCart = useCallback((items) => {
+        const groupedPackages = items.reduce((acc, item) => {
+            const sellerId = item.seller_id || 0;
+            if (!acc[sellerId]) acc[sellerId] = { seller_id: sellerId, items: [] };
+            acc[sellerId].items.push(item);
+            return acc;
+        }, {});
+        return Object.values(groupedPackages);
+    }, []);
 
     const fetchCheckoutData = useCallback(async () => {
         const token = localStorage.getItem(CACHE_KEYS.TOKEN);
-        if (!token) return;
-
+        setData({
+            packages: buildPackagesFromCart(cartItems || []),
+            summary: summary || {}
+        });
         setLoading(true);
         try {
-            const headers = { 
-                "Authorization": `Bearer ${token}`, 
-                "Accept": "application/json" 
-            };
+            if (token && user) {
+                const headers = {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                };
 
-            // 1. Fetch Order Summary
-            const checkoutRes = await fetch(`${baseURL}/version3/checkout`, { headers });
-            const checkoutJson = await checkoutRes.json();
-            if (checkoutRes.ok) setData(checkoutJson);
-
-            // 2. Fetch Existing Address
-            const addressRes = await fetch(`${baseURL}/profile/address-list`, { headers });
-            const addressJson = await addressRes.json();
-            if (addressRes.ok && addressJson.addresses?.length > 0) {
-                setExistingAddress(addressJson.addresses[0]);
+                const addressRes = await fetch(`${baseURL}/profile/address-list`, { headers });
+                const addressJson = await addressRes.json();
+                if (addressRes.ok && addressJson.addresses?.length > 0) {
+                    setExistingAddress(addressJson.addresses[0]);
+                }
+            } else {
+                setExistingAddress(null);
             }
         } catch (err) { 
             console.error("Fetch Error:", err); 
         } finally { 
             setLoading(false); 
         }
-    }, []);
+    }, [user, cartItems, summary, buildPackagesFromCart]);
 
     // Initial fetch on login/app load
     useEffect(() => { 
-        if (user) fetchCheckoutData(); 
+        fetchCheckoutData(); 
     }, [user, fetchCheckoutData]);
+
+    useEffect(() => {
+        setData({
+            packages: buildPackagesFromCart(cartItems || []),
+            summary: summary || {}
+        });
+    }, [cartItems, summary, buildPackagesFromCart]);
+
+    const syncBackendCartFromLocal = useCallback(async (token) => {
+        const deviceToken = getDeviceToken();
+        const authHeaders = token
+            ? { Authorization: `Bearer ${token}` }
+            : {};
+
+        const syncRes = await fetch(`${baseURL}/cart/sync`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                ...authHeaders
+            },
+            body: JSON.stringify({
+                device_token: deviceToken,
+                user_id: token && user?.id ? user.id : null,
+                items: (cartItems || []).map((item) => ({
+                    product_id: item.product_id,
+                    qty: item.qty,
+                    price: item.price,
+                    product_type: "product",
+                    seller_id: item.seller_id || 1
+                }))
+            })
+        });
+
+        if (!syncRes.ok) {
+            throw new Error("Unable to sync cart for order");
+        }
+    }, [cartItems, user]);
 
     const processOrder = useCallback(async (formData) => {
         const token = localStorage.getItem(CACHE_KEYS.TOKEN);
         setIsSubmitting(true); // Start processing state
         try {
             const headers = { 
-                "Authorization": `Bearer ${token}`, 
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             };
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
+
+            await syncBackendCartFromLocal(token);
 
             // Save Address
             const addressPayload = {
@@ -67,37 +120,47 @@ export const CheckoutProvider = ({ children }) => {
                 city: 1, state: 1, country: 1, postal_code: "0000"
             };
 
-            const addressUrl = existingAddress 
-                ? `${baseURL}/profile/address-update/${existingAddress.id}` 
-                : `${baseURL}/profile/address-store`;
-            
-            await fetch(addressUrl, {
-                method: "POST",
-                headers,
-                body: JSON.stringify(addressPayload)
-            });
+            if (token && user) {
+                const addressUrl = existingAddress
+                    ? `${baseURL}/profile/address-update/${existingAddress.id}`
+                    : `${baseURL}/profile/address-store`;
+
+                await fetch(addressUrl, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(addressPayload)
+                });
+            }
 
             // Place Order
-            const packages = data?.packages || [];
+            const packages = buildPackagesFromCart(cartItems || []);
+            const checkoutSummary = summary || {};
             const orderPayload = {
                 customer_email: formData.email,
                 customer_phone: formData.phone,
-                customer_shipping_address: "required",
-                customer_billing_address: "required",
+                customer_shipping_address: formData.address,
+                customer_billing_address: formData.address,
                 payment_method: 1, 
                 payment_id: 0,
-                grand_total: data?.summary?.grand_total,
-                sub_total: data?.summary?.subtotal,
-                discount_total: data?.summary?.discount,
-                shipping_total: data?.summary?.shipping_cost,
+                grand_total: checkoutSummary.grand_total || 0,
+                sub_total: checkoutSummary.subtotal || 0,
+                discount_total: checkoutSummary.discount || 0,
+                shipping_total: checkoutSummary.shipping_cost || 0,
                 tax_total: 0,
                 number_of_package: packages.length,
-                number_of_item: data?.summary?.total_items,
+                number_of_item: checkoutSummary.total_items || 0,
                 shipping_cost: packages.map(() => 0),
                 delivery_date: packages.map(() => new Date().toISOString().split('T')[0]),
                 shipping_method: packages.map(() => 1),
                 packagewiseTax: packages.map(() => 0),
+                shipping_name: `${formData.first_name} ${formData.last_name}`,
+                shipping_address: formData.address,
+                billing_name: `${formData.first_name} ${formData.last_name}`,
+                billing_address: formData.address,
             };
+            if (!token || !user) {
+                orderPayload.device_token = getDeviceToken();
+            }
 
             const orderRes = await fetch(`${baseURL}/order-store`, {
                 method: "POST",
@@ -117,7 +180,7 @@ export const CheckoutProvider = ({ children }) => {
         } finally { 
             setIsSubmitting(false); // Reset processing state
         }
-    }, [data, existingAddress, clearCartState]);
+    }, [existingAddress, clearCartState, user, cartItems, summary, buildPackagesFromCart, syncBackendCartFromLocal]);
 
     return (
         <CheckoutContext.Provider value={{ 

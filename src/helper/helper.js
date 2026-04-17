@@ -1,5 +1,6 @@
-export const baseURL = "https://api.tiptophut.com";
-export const assetsURL = "https://api.tiptophut.com/";
+import { baseURL, assetsURL } from "../utils/constants";
+
+export { baseURL, assetsURL };
 
 
 export const token = localStorage.getItem("auth_token");

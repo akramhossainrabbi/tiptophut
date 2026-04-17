@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
 import ShopPage from "./pages/ShopPage";
 import CategoryPage from "./pages/CategoryPage";
 import BrandPage from "./pages/BrandPage";
+import BrandsPage from "./pages/BrandsPage";
 import TagPage from "./pages/TagPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -24,8 +26,14 @@ import FooterTwo from "./components/Common/Footer";
 import BottomFooter from "./components/Common/BottomFooter";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import CartDrawer from "./components/CartDrawer";
+import SectionProductsPage from "./pages/SectionProductsPage";
+import CategoriesPage from "./pages/CategoriesPage";
 
 function App() {
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+  const openCartDrawer = () => setIsCartDrawerOpen(true);
+  const closeCartDrawer = () => setIsCartDrawerOpen(false);
   
   return (
     <>
@@ -41,6 +49,7 @@ function App() {
 
       {/* Header */}
       <Header
+        onCartClick={openCartDrawer}
         settings={{
           showTopBar: true, // Show/hide top bar
           showPhone: true,  // Show/hide phone number
@@ -52,6 +61,21 @@ function App() {
             {
               title: "Home",
               path: "/",
+              hasSubmenu: false
+            },
+            {
+              title: "Shop",
+              path: "/shop",
+              hasSubmenu: false
+            },
+            {
+              title: "Categories",
+              path: "/categories",
+              hasSubmenu: false
+            },
+            {
+              title: "Brands",
+              path: "/brands",
               hasSubmenu: false
             },
             // {
@@ -83,6 +107,8 @@ function App() {
         
         {/* Shop Pages - Each with specific filters */}
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/brands" element={<BrandsPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/brand/:slug" element={<BrandPage />} />
         <Route path="/tag/:slug" element={<TagPage />} />
@@ -99,6 +125,7 @@ function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog-details" element={<BlogDetailsPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/section/:sectionKey" element={<SectionProductsPage />} />
       </Routes>
 
       {/* ShippingTwo */}
@@ -112,6 +139,12 @@ function App() {
 
       {/* BottomFooter */}
       <BottomFooter />
+
+      <CartDrawer
+        isOpen={isCartDrawerOpen}
+        onClose={closeCartDrawer}
+        onOpen={openCartDrawer}
+      />
     </>
   );
 }

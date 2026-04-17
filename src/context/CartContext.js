@@ -1,110 +1,122 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { baseURL, CACHE_KEYS } from "../utils/constants";
-import { getDeviceToken } from "../utils/deviceHelper";
-import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
 
 const CartContext = createContext();
+const CART_STORAGE_KEY = "cart-items-v1";
+
+const toNumber = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const buildSummary = (items) => {
+    const subtotal = items.reduce((sum, item) => {
+        const qty = toNumber(item.qty);
+        const unitOriginalPrice = toNumber(item.original_price ?? item.price);
+        return sum + unitOriginalPrice * qty;
+    }, 0);
+    const discount = items.reduce((sum, item) => {
+        const qty = toNumber(item.qty);
+        const unitOriginalPrice = toNumber(item.original_price ?? item.price);
+        const unitFinalPrice = toNumber(item.price);
+        const unitDiscount = Math.max(unitOriginalPrice - unitFinalPrice, 0);
+        return sum + unitDiscount * qty;
+    }, 0);
+    const totalItems = items.reduce((sum, item) => sum + toNumber(item.qty), 0);
+    const shippingCost = 0;
+    return {
+        subtotal,
+        shipping_cost: shippingCost,
+        discount,
+        grand_total: subtotal - discount + shippingCost,
+        total_items: totalItems
+    };
+};
+
+const mapProductToCartItem = (product, quantity, price) => ({
+    id: product.id,
+    product_id: product.id,
+    qty: quantity,
+    price: toNumber(price),
+    original_price: toNumber(product?.base_price ?? price),
+    total_price: toNumber(price) * quantity,
+    seller_id: product.seller_id || 1,
+    product: {
+        id: product.id,
+        slug: product.slug,
+        name: product.product_name || product.name,
+        thumb: product.thumbnail || product.thumb,
+        brand_name: product.brand_name || product.brand?.name || ""
+    }
+});
+
+const readCartFromStorage = () => {
+    try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+        return [];
+    }
+};
 
 export const CartProvider = ({ children }) => {
-    const { user } = useAuth();
-    const [cartItems, setCartItems] = useState([]);
-    const [summary, setSummary] = useState(null);
+    const [cartItems, setCartItems] = useState(() => readCartFromStorage());
+    const [summary, setSummary] = useState(() => buildSummary(readCartFromStorage()));
     const [cartCount, setCartCount] = useState(0);
+    const [loading] = useState(false);
 
-    const fetchCartData = useCallback(async () => {
-        try {
-            const device_token = getDeviceToken();
-            const query = user ? `device_token=${device_token}&user_id=${user.id}` : `device_token=${device_token}`;
-            const res = await fetch(`${baseURL}/version3/cart?${query}`);
-            const json = await res.json();
-            if (json.message === "Success") {
-                setCartItems(json.items || []);
-                setSummary(json.summary);
-                setCartCount(json.summary?.total_items || 0);
-            }
-        } catch (err) { console.error(err); }
-    }, [user]);
-
-    useEffect(() => { fetchCartData(); }, [fetchCartData]);
-
-    const getHeaders = () => ({
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem(CACHE_KEYS.TOKEN)}`
-    });
+    useEffect(() => {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+        const nextSummary = buildSummary(cartItems);
+        setSummary(nextSummary);
+        setCartCount(nextSummary.total_items);
+    }, [cartItems]);
 
     const addToCart = useCallback(async (product, quantity, price) => {
-        // Optimistic Count Update
-        setCartCount(prev => prev + quantity);
-        try {
-            const res = await fetch(`${baseURL}/cart`, {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    product_id: product.id,
-                    qty: quantity,
-                    price: price,
-                    product_type: "product",
-                    seller_id: product.seller_id || 1,
-                    device_token: getDeviceToken(),
-                    ...(user && { user_id: user.id })
-                })
-            });
-            const json = await res.json();
-            if (res.ok) {
-                toast.success("Added to cart successfully");
-                fetchCartData();
-                return { success: true };
+        setCartItems((prev) => {
+            const existingItem = prev.find((item) => item.product_id === product.id);
+            if (existingItem) {
+                return prev.map((item) =>
+                    item.product_id === product.id
+                        ? {
+                            ...item,
+                            qty: item.qty + quantity,
+                            total_price: item.price * (item.qty + quantity)
+                        }
+                        : item
+                );
             }
-            throw new Error();
-        } catch (err) {
-            setCartCount(prev => prev - quantity); // Rollback
-            toast.error("Failed to add to cart");
-            return { success: false };
+            return [...prev, mapProductToCartItem(product, quantity, price)];
+        });
+        toast.success("Added to cart successfully");
+        return { success: true };
+    }, []);
+
+    const updateQuantity = useCallback((id, newQty) => {
+        if (newQty < 1) {
+            setCartItems((prev) => prev.filter((item) => item.id !== id));
+            return;
         }
-    }, [user, fetchCartData]);
 
-    const updateQuantity = useCallback(async (id, newQty) => {
-        if (newQty < 1) return;
-        
-        const previousItems = [...cartItems];
-        // OPTIMISTIC UI: Update list immediately
-        setCartItems(prev => prev.map(item => 
-            item.id === id ? { ...item, qty: newQty, total_price: item.price * newQty } : item
-        ));
+        setCartItems((prev) =>
+            prev.map((item) =>
+                item.id === id
+                    ? { ...item, qty: newQty, total_price: item.price * newQty }
+                    : item
+            )
+        );
+    }, []);
 
-        try {
-            const res = await fetch(`${baseURL}/cart/update-qty`, {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify({ id, qty: newQty })
-            });
-            if (!res.ok) throw new Error();
-            fetchCartData(); // Background sync
-        } catch (err) {
-            setCartItems(previousItems); // Rollback
-            toast.error("Update failed");
-        }
-    }, [cartItems, fetchCartData]);
+    const removeFromCart = useCallback((id) => {
+        setCartItems((prev) => prev.filter((item) => item.id !== id));
+    }, []);
 
-    const removeFromCart = useCallback(async (id) => {
-        const previousItems = [...cartItems];
-        setCartItems(prev => prev.filter(item => item.id !== id)); // Optimistic remove
-
-        try {
-            const res = await fetch(`${baseURL}/cart/remove`, {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify({ id })
-            });
-            if (!res.ok) throw new Error();
-            fetchCartData();
-        } catch (err) {
-            setCartItems(previousItems); // Rollback
-            toast.error("Remove failed");
-        }
-    }, [cartItems, fetchCartData]);
+    const getCartItemQty = useCallback((productId) => {
+        const item = cartItems.find((cartItem) => cartItem.product_id === productId);
+        return item?.qty || 0;
+    }, [cartItems]);
 
     const clearCartState = () => {
         setCartItems([]);
@@ -119,7 +131,7 @@ export const CartProvider = ({ children }) => {
     };
 
     return (
-        <CartContext.Provider value={{ cartItems, summary, cartCount, addToCart, updateQuantity, removeFromCart, clearCartState }}>
+        <CartContext.Provider value={{ cartItems, summary, cartCount, loading, addToCart, updateQuantity, removeFromCart, getCartItemQty, clearCartState }}>
             {children}
         </CartContext.Provider>
     );

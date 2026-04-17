@@ -8,6 +8,7 @@ const SliderComponent = memo(() => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [slideRatios, setSlideRatios] = useState({});
   
   const { 
     sliders, 
@@ -32,6 +33,17 @@ const SliderComponent = memo(() => {
 
   const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
   const handleTouchMove = (e) => setTouchEnd(e.touches[0].clientX);
+  const handleImageLoad = (index, event) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    if (!naturalWidth || !naturalHeight) return;
+
+    const ratio = `${naturalWidth} / ${naturalHeight}`;
+    setSlideRatios((prev) => {
+      if (prev[index] === ratio) return prev;
+      return { ...prev, [index]: ratio };
+    });
+  };
+
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
@@ -54,11 +66,14 @@ const SliderComponent = memo(() => {
     );
   }
 
+  const activeAspectRatio = slideRatios[activeIndex] || 'var(--slider-aspect-ratio)';
+
   return (
     // 'container-lg' ensures it's fluid until 992px, then stays constrained
     <div className="container container-lg py-3 py-lg-5">
       <div 
         className="slider-main-wrapper position-relative overflow-hidden rounded-4 border border-gray-100"
+        style={{ aspectRatio: activeAspectRatio }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -80,6 +95,7 @@ const SliderComponent = memo(() => {
                   alt={slider.title || "Promotional banner"}
                   className="slider-img img-fluid w-100 h-100 object-fit-cover"
                   loading={index === 0 ? "eager" : "lazy"}
+                  onLoad={(event) => handleImageLoad(index, event)}
                 />
               </Link>
             </div>

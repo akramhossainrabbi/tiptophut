@@ -164,14 +164,14 @@ const CategoryShop = () => {
 
                         <div className={`row g-12 ${!isGrid ? "list-view-mode" : ""}`}>
                             {products.map((product, index) => (
-                                <div key={`${product.id}-${index}`} ref={products.length === index + 1 ? lastProductElementRef : null} className={isGrid ? "col-xxl-3 col-xl-4 col-sm-6" : "col-12"}>
+                                <div key={`${product.id}-${index}`} ref={products.length === index + 1 ? lastProductElementRef : null} className={isGrid ? "col-6 col-xl-4 col-xxl-3" : "col-12"}>
                                     <ProductCard product={product} isListView={!isGrid} />
                                 </div>
                             ))}
                             
                             {loading && skeletonCount > 0 && (
                                 [...Array(skeletonCount)].map((_, i) => (
-                                    <div key={`skeleton-${i}`} className={isGrid ? "col-xxl-3 col-xl-4 col-sm-6" : "col-12"}>
+                                    <div key={`skeleton-${i}`} className={isGrid ? "col-6 col-xl-4 col-xxl-3" : "col-12"}>
                                         <ProductSkeleton isListView={!isGrid} />
                                     </div>
                                 ))

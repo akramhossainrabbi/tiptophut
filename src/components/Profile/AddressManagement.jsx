@@ -139,7 +139,7 @@ export default function AddressManagement() {
                   <div className="d-flex gap-2">
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-secondary"
+                      className="btn btn-sm btn-secondary"
                       onClick={() => handleEditAddress(address)}
                       disabled={formLoading}
                     >
@@ -147,7 +147,7 @@ export default function AddressManagement() {
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-danger"
+                      className="btn btn-sm btn-danger"
                       onClick={() => handleDeleteAddress(address.id)}
                       disabled={formLoading}
                     >
