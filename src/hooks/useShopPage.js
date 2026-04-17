@@ -16,6 +16,7 @@ const useShopPage = (type, slug) => {
     
     const [sortBy, setSortBy] = useState("latest");
     const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
     
     // This allows us to track if the user actually clicked "Filter" or changed Sort
     const [filterTick, setFilterTick] = useState(0);
@@ -27,7 +28,7 @@ const useShopPage = (type, slug) => {
         setProducts([]);
         setPage(1);
         setHasMore(true);
-    }, [type, slug, sortBy, selectedBrands, filterTick]);
+    }, [type, slug, sortBy, selectedBrands, selectedCategories, filterTick]);
 
     const fetchShopData = useCallback(async (pageNum) => {
         setLoading(true);
@@ -43,7 +44,11 @@ const useShopPage = (type, slug) => {
                 queryParams.append("brands", selectedBrands.join(","));
             }
 
-            const res = await fetch(`${baseURL}/version3/${type}/${slug}?${queryParams.toString()}`);
+            if (selectedCategories.length > 0) {
+                queryParams.append("categories", selectedCategories.join(","));
+            }
+
+            const res = await fetch(`${baseURL}/version3/shop?${queryParams.toString()}`);
             if (!res.ok) throw new Error("Failed to fetch");
             const result = await res.json();
             
@@ -81,7 +86,7 @@ const useShopPage = (type, slug) => {
             setLoading(false);
         }
         // Removed priceRange from here to prevent fetching while sliding
-    }, [type, slug, sortBy, selectedBrands, filterTick]); 
+    }, [type, slug, sortBy, selectedBrands, selectedCategories, filterTick]); 
 
     useEffect(() => {
         fetchShopData(page);
@@ -94,6 +99,7 @@ const useShopPage = (type, slug) => {
         } else {
             setSelectedBrands([]);
         }
+        setSelectedCategories([]);
     }, [slug, type]);
 
     return { 
@@ -102,6 +108,7 @@ const useShopPage = (type, slug) => {
         initialBrands, initialCategories,
         sortBy, setSortBy,
         selectedBrands, setSelectedBrands,
+        selectedCategories, setSelectedCategories,
         applyFilter: () => setFilterTick(prev => prev + 1) // Call this when clicking "Filter"
     };
 };

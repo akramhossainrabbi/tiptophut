@@ -13,10 +13,24 @@ export const CheckoutProvider = ({ children }) => {
     const [existingAddress, setExistingAddress] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for the button
-    const { clearCartState } = useCart();
+    const { cartItems, summary, clearCartState } = useCart();
+
+    const buildPackagesFromCart = useCallback((items) => {
+        const groupedPackages = items.reduce((acc, item) => {
+            const sellerId = item.seller_id || 0;
+            if (!acc[sellerId]) acc[sellerId] = { seller_id: sellerId, items: [] };
+            acc[sellerId].items.push(item);
+            return acc;
+        }, {});
+        return Object.values(groupedPackages);
+    }, []);
 
     const fetchCheckoutData = useCallback(async () => {
         const token = localStorage.getItem(CACHE_KEYS.TOKEN);
+        setData({
+            packages: buildPackagesFromCart(cartItems || []),
+            summary: summary || {}
+        });
         setLoading(true);
         try {
             if (token && user) {
@@ -25,10 +39,6 @@ export const CheckoutProvider = ({ children }) => {
                     "Accept": "application/json"
                 };
 
-                const checkoutRes = await fetch(`${baseURL}/version3/checkout`, { headers });
-                const checkoutJson = await checkoutRes.json();
-                if (checkoutRes.ok) setData(checkoutJson);
-
                 const addressRes = await fetch(`${baseURL}/profile/address-list`, { headers });
                 const addressJson = await addressRes.json();
                 if (addressRes.ok && addressJson.addresses?.length > 0) {
@@ -36,33 +46,56 @@ export const CheckoutProvider = ({ children }) => {
                 }
             } else {
                 setExistingAddress(null);
-                const device_token = getDeviceToken();
-                const guestRes = await fetch(`${baseURL}/version3/cart?device_token=${device_token}`);
-                const guestJson = await guestRes.json();
-                if (guestRes.ok && guestJson?.summary) {
-                    const groupedPackages = (guestJson.items || []).reduce((acc, item) => {
-                        const sellerId = item.seller_id || 0;
-                        if (!acc[sellerId]) acc[sellerId] = { seller_id: sellerId, items: [] };
-                        acc[sellerId].items.push(item);
-                        return acc;
-                    }, {});
-                    setData({
-                        packages: Object.values(groupedPackages),
-                        summary: guestJson.summary
-                    });
-                }
             }
         } catch (err) { 
             console.error("Fetch Error:", err); 
         } finally { 
             setLoading(false); 
         }
-    }, [user]);
+    }, [user, cartItems, summary, buildPackagesFromCart]);
 
     // Initial fetch on login/app load
     useEffect(() => { 
         fetchCheckoutData(); 
     }, [user, fetchCheckoutData]);
+
+    useEffect(() => {
+        setData({
+            packages: buildPackagesFromCart(cartItems || []),
+            summary: summary || {}
+        });
+    }, [cartItems, summary, buildPackagesFromCart]);
+
+    const syncBackendCartFromLocal = useCallback(async (token) => {
+        const deviceToken = getDeviceToken();
+        const authHeaders = token
+            ? { Authorization: `Bearer ${token}` }
+            : {};
+
+        const syncRes = await fetch(`${baseURL}/cart/sync`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                ...authHeaders
+            },
+            body: JSON.stringify({
+                device_token: deviceToken,
+                user_id: token && user?.id ? user.id : null,
+                items: (cartItems || []).map((item) => ({
+                    product_id: item.product_id,
+                    qty: item.qty,
+                    price: item.price,
+                    product_type: "product",
+                    seller_id: item.seller_id || 1
+                }))
+            })
+        });
+
+        if (!syncRes.ok) {
+            throw new Error("Unable to sync cart for order");
+        }
+    }, [cartItems, user]);
 
     const processOrder = useCallback(async (formData) => {
         const token = localStorage.getItem(CACHE_KEYS.TOKEN);
@@ -75,6 +108,8 @@ export const CheckoutProvider = ({ children }) => {
             if (token) {
                 headers.Authorization = `Bearer ${token}`;
             }
+
+            await syncBackendCartFromLocal(token);
 
             // Save Address
             const addressPayload = {
@@ -98,7 +133,8 @@ export const CheckoutProvider = ({ children }) => {
             }
 
             // Place Order
-            const packages = data?.packages || [];
+            const packages = buildPackagesFromCart(cartItems || []);
+            const checkoutSummary = summary || {};
             const orderPayload = {
                 customer_email: formData.email,
                 customer_phone: formData.phone,
@@ -106,13 +142,13 @@ export const CheckoutProvider = ({ children }) => {
                 customer_billing_address: formData.address,
                 payment_method: 1, 
                 payment_id: 0,
-                grand_total: data?.summary?.grand_total,
-                sub_total: data?.summary?.subtotal,
-                discount_total: data?.summary?.discount,
-                shipping_total: data?.summary?.shipping_cost,
+                grand_total: checkoutSummary.grand_total || 0,
+                sub_total: checkoutSummary.subtotal || 0,
+                discount_total: checkoutSummary.discount || 0,
+                shipping_total: checkoutSummary.shipping_cost || 0,
                 tax_total: 0,
                 number_of_package: packages.length,
-                number_of_item: data?.summary?.total_items,
+                number_of_item: checkoutSummary.total_items || 0,
                 shipping_cost: packages.map(() => 0),
                 delivery_date: packages.map(() => new Date().toISOString().split('T')[0]),
                 shipping_method: packages.map(() => 1),
@@ -144,7 +180,7 @@ export const CheckoutProvider = ({ children }) => {
         } finally { 
             setIsSubmitting(false); // Reset processing state
         }
-    }, [data, existingAddress, clearCartState, user]);
+    }, [existingAddress, clearCartState, user, cartItems, summary, buildPackagesFromCart, syncBackendCartFromLocal]);
 
     return (
         <CheckoutContext.Provider value={{ 

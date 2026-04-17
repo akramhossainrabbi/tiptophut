@@ -10,13 +10,25 @@ const toNumber = (value) => {
 };
 
 const buildSummary = (items) => {
-    const subtotal = items.reduce((sum, item) => sum + toNumber(item.total_price), 0);
+    const subtotal = items.reduce((sum, item) => {
+        const qty = toNumber(item.qty);
+        const unitOriginalPrice = toNumber(item.original_price ?? item.price);
+        return sum + unitOriginalPrice * qty;
+    }, 0);
+    const discount = items.reduce((sum, item) => {
+        const qty = toNumber(item.qty);
+        const unitOriginalPrice = toNumber(item.original_price ?? item.price);
+        const unitFinalPrice = toNumber(item.price);
+        const unitDiscount = Math.max(unitOriginalPrice - unitFinalPrice, 0);
+        return sum + unitDiscount * qty;
+    }, 0);
     const totalItems = items.reduce((sum, item) => sum + toNumber(item.qty), 0);
+    const shippingCost = 0;
     return {
         subtotal,
-        shipping_cost: 0,
-        discount: 0,
-        grand_total: subtotal,
+        shipping_cost: shippingCost,
+        discount,
+        grand_total: subtotal - discount + shippingCost,
         total_items: totalItems
     };
 };
@@ -26,6 +38,7 @@ const mapProductToCartItem = (product, quantity, price) => ({
     product_id: product.id,
     qty: quantity,
     price: toNumber(price),
+    original_price: toNumber(product?.base_price ?? price),
     total_price: toNumber(price) * quantity,
     seller_id: product.seller_id || 1,
     product: {

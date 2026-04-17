@@ -21,7 +21,7 @@ const ShopPage = ({ type = "category" }) => {
       <Breadcrumb title={"Shop"} />
 
       {/* ShopSection */}
-      <ShopSection type={type} />
+      <ShopSection type="shop" filters={["category", "brand", "price"]} />
     </>
   );
 };

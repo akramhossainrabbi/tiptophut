@@ -7,7 +7,6 @@ const Checkout = () => {
     const { data, existingAddress, loading, isSubmitting, processOrder, fetchCheckoutData } = useCheckout();
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [selectedPayment, setSelectedPayment] = useState("payment1");
 
     const [form, setForm] = useState({
         first_name: "", last_name: "", email: "", phone: "", address: ""
@@ -16,7 +15,7 @@ const Checkout = () => {
     // 1. Re-fetch data every time user enters the checkout page
     useEffect(() => {
         fetchCheckoutData();
-    }, [user, fetchCheckoutData, navigate]);
+    }, [user, fetchCheckoutData]);
 
     // 2. Populate form when address is found
     useEffect(() => {
@@ -43,7 +42,7 @@ const Checkout = () => {
         return <div className="py-80 text-center">Loading Checkout Details...</div>;
     }
 
-    const summary = data?.summary || { subtotal: 0, shipping_cost: 0, grand_total: 0 };
+    const summary = data?.summary || { subtotal: 0, discount: 0, shipping_cost: 0, grand_total: 0 };
 
     return (
         <section className="checkout py-80">
@@ -82,6 +81,10 @@ const Checkout = () => {
                                 <div className="flex-between">
                                     <span className="text-gray-900">Shipping</span>
                                     <span className="text-gray-900 fw-semibold">৳{summary.shipping_cost}</span>
+                                </div>
+                                <div className="flex-between">
+                                    <span className="text-gray-900">Discount</span>
+                                    <span className="text-gray-900 fw-semibold">-৳{summary.discount}</span>
                                 </div>
                                 <div className="flex-between border-top pt-16">
                                     <span className="text-gray-900 text-xl fw-bold">Total</span>

@@ -54,3 +54,11 @@
     display: flex !important;
     align-items: center;
 }
+
+/* Reduce category title size on mobile */
+@media (max-width: 575.98px) {
+    .feature-item__content h6 {
+        font-size: 0.875rem !important;
+        line-height: 1.25rem;
+    }
+}

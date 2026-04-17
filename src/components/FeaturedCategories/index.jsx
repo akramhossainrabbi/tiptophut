@@ -38,7 +38,7 @@ const FeaturedCategories = () => {
             { breakpoint: 1399, settings: { slidesToShow: 6 } },
             { breakpoint: 992, settings: { slidesToShow: 5 } },
             { breakpoint: 768, settings: { slidesToShow: 4 } },
-            { breakpoint: 424, settings: { slidesToShow: 2 } },
+            { breakpoint: 424, settings: { slidesToShow: 3 } },
         ],
     }), [featured.length]);
 

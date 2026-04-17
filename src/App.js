@@ -4,6 +4,7 @@ import RouteScrollToTop from "./helper/RouteScrollToTop";
 import ShopPage from "./pages/ShopPage";
 import CategoryPage from "./pages/CategoryPage";
 import BrandPage from "./pages/BrandPage";
+import BrandsPage from "./pages/BrandsPage";
 import TagPage from "./pages/TagPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -27,6 +28,7 @@ import ProfilePage from "./pages/ProfilePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import CartDrawer from "./components/CartDrawer";
 import SectionProductsPage from "./pages/SectionProductsPage";
+import CategoriesPage from "./pages/CategoriesPage";
 
 function App() {
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
@@ -61,6 +63,21 @@ function App() {
               path: "/",
               hasSubmenu: false
             },
+            {
+              title: "Shop",
+              path: "/shop",
+              hasSubmenu: false
+            },
+            {
+              title: "Categories",
+              path: "/categories",
+              hasSubmenu: false
+            },
+            {
+              title: "Brands",
+              path: "/brands",
+              hasSubmenu: false
+            },
             // {
             //   title: "Products",
             //   path: "#",
@@ -90,6 +107,8 @@ function App() {
         
         {/* Shop Pages - Each with specific filters */}
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/brands" element={<BrandsPage />} />
         <Route path="/category/:slug" element={<CategoryPage />} />
         <Route path="/brand/:slug" element={<BrandPage />} />
         <Route path="/tag/:slug" element={<TagPage />} />
